@@ -24,35 +24,55 @@ var BubbleVisualDebug = (function(){
 				*/
 				//circles
 				var style = "top:"+(hexheight*y+(0.5*hexheight*y))+"px;"+"left:"+(hexwidth*x)+"px;"+"background-color:"+grid[x][y].getColorName()+";";
+				if(grid[x][y].isNull) {
+					style += "display:none";
+				}
 				jQuery("#bubblegrid").append("<div id='"+x+"_"+y+"' class='circle' style='"+style+"'></div>");
 				// odd
 				var style = "top:"+(hexheight*(y+0.75)+(0.5*hexheight*y))+"px;"+"left:"+(hexwidth*(x+0.5))+"px;"+"background-color:"+grid[x][y+1].getColorName()+";";
+				if(grid[x][y+1].isNull) {
+					style += "display:none";
+				}
 				jQuery("#bubblegrid").append("<div id='"+x+"_"+(y+1)+"' class='circle' style='"+style+"'></div>");
 			}
 		}
+		var centerw = (((8*hexwidth)+(0.5*hexwidth)) / 2) - (0.5*hexwidth);
+		var style = "bottom:0px;left:"+centerw+"px;background-color:red;";
+		jQuery("#bubblegrid").append("<div id='loaded' class='circle' style='"+style+"'></div>");
+		var style = "bottom:0px;left:0px;";
+		jQuery("#bubblegrid").append("<div id='next' class='circle' style='"+style+"'></div>");
 	};
 
 	var renderBubbles = function() {
+		jQuery("#bubblegrid").html("");
 		var grid = BubbleGame.getGrid();
 		for(var x = 0; x < grid.length; x++) {
 			for(var y = 0; y < grid[x].length/2; y++) {
 				//circles
 				var style = "top:"+(hexheight*y+(0.5*hexheight*y))+"px;"+"left:"+(hexwidth*x)+"px;"+"background-color:"+grid[x][y].getColorName()+";";
+				if(grid[x][y].isNull) {
+					style += "display:none";
+				}
 				jQuery("#bubblegrid").append("<div id='"+x+"_"+y+"' class='circle' style='"+style+"'></div>");
 				// odd
 				var style = "top:"+(hexheight*(y+0.75)+(0.5*hexheight*y))+"px;"+"left:"+(hexwidth*(x+0.5))+"px;"+"background-color:"+grid[x][y+1].getColorName()+";";
+				if(grid[x][y+1].isNull) {
+					style += "display:none";
+				}
 				jQuery("#bubblegrid").append("<div id='"+x+"_"+(y+1)+"' class='circle' style='"+style+"'></div>");
 			}
 		}
+		var centerw = (((8*hexwidth)+(0.5*hexwidth)) / 2) - (0.5*hexwidth);
+		var style = "bottom:0px;left:"+centerw+"px;background-color:red;";
+		jQuery("#bubblegrid").append("<div id='loaded' class='circle' style='"+style+"'></div>");
+		var style = "bottom:0px;left:0px;";
+		jQuery("#bubblegrid").append("<div id='next' class='circle' style='"+style+"'></div>");
 	};
 
 	return {
-		"init":init
+		"init":init,
+		"renderBubbles":renderBubbles
 	};
 })();
 
 BubbleVisualDebug.init();
-
-//jQuery("<style>"+"#"+x+"_"+y+".hexagon:after"+"{background-color:"+grid[x][y].getColorName()+";}"+"</style>").appendTo("head");
-//document.styleSheets[0].addRule("#"+x+"_"+y+":after","background-color:"+grid[x][y].getColorName()+";");
-//document.styleSheets[0].addRule("#"+x+"_"+y+":before","background-color:"+grid[x][y].getColorName()+";");

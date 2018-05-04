@@ -222,6 +222,14 @@ var BubbleGame = (function(){
 		reloadActiveBubble();
 	};
 
+	var getLoadedBubble = function() {
+		return loadedBubble;
+	};
+
+	var getNextBubble = function() {
+		return nextBubble;
+	};
+
 	return {
 		"initGrid": initGrid,
 		"getGrid": getGrid,
@@ -230,6 +238,7 @@ var BubbleGame = (function(){
 		"tick":tick,
 		"stick":stick,
 		"shootBubble":shootBubble,
-		"reloadActiveBubble":reloadActiveBubble,
+		"getLoadedBubble": getLoadedBubble,
+		"getNextBubble": getNextBubble
 	};
 })();
