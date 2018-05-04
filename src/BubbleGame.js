@@ -147,7 +147,7 @@ var BubbleGame = (function(){
 			nextBubble = new Bubble(activecolors[randindex],-1,-1);
 		}
 	};
-	//fix
+	//
 	var reloadActiveBubble = function() {
 		if(nextBubble != null) {
 			loadedBubble = nextBubble;
@@ -156,14 +156,14 @@ var BubbleGame = (function(){
 			loadedBubble.activey = gridsizey - g_hexradius;
 		}
 	};
-	//fix
+	//
 	var shootBubble = function() {
 		loadedBubble.activex = (gridsizex+g_hexradius) / 2;
 		loadedBubble.activey = gridsizey - g_hexradius;
 		loadedBubble.vx = g_shotspeed * Math.cos(playerAngle);
 		loadedBubble.vy = g_shotspeed * Math.sin(playerAngle);
 	};
-	//fix
+	//
 	var tick = function() {
 		//move bubble
 		loadedBubble.activex += loadedBubble.vx;
@@ -194,7 +194,7 @@ var BubbleGame = (function(){
 			}
 		}
 	};
-	//fix
+	//
 	var stick = function() {
 		var closest = [null,1000];//bubble, dist
 		for(var y = 0; y < gridsizey; y++) {
