@@ -1,0 +1,20 @@
+{
+  "appID": "097f82d2c8c5447ea4319442ec7973ef",
+  "dependencies": {
+    "devkit-core": "https://github.com/gameclosure/devkit-core#v4.5.3"
+  },
+  "shortName": "gctest",
+  "studio": {
+    "domain": "studio.example.com",
+    "name": "Your Studio Name",
+    "stagingDomain": "staging.example.com"
+  },
+  "supportedOrientations": [
+    "portrait"
+  ],
+  "title": "gctest",
+  "splash": {
+    "autoHide": true,
+    "universal": "resources/splash/portrait2048.png"
+  },
+}

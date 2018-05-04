@@ -1,0 +1,39 @@
+.hexagon {
+  position: absolute;
+  width: 43.30127018922193px; 
+  height: 25.00px;
+  background-color: #64C7CC;
+  margin: 12.50px 0;
+}
+
+.hexagon:before,
+.hexagon:after {
+  content: "";
+  position: absolute;
+  width: 0;
+  border-left: 21.650635094610966px solid transparent;
+  border-right: 21.650635094610966px solid transparent;
+}
+
+.hexagon:before {
+  bottom: 100%;
+  border-bottom: 12.50px solid #64C7CC;
+}
+
+.hexagon:after {
+  top: 100%;
+  width: 0;
+  border-top: 12.50px solid #64C7CC;
+}
+#bubblegrid{
+  position:absolute;
+  top:0px;
+  left:0px;
+}
+.circle {
+  position: absolute;
+  width: 43.30127018922193px;
+  height: 43.30127018922193px;
+  border-radius: 50%;
+  background-color: #64C7CC;
+}
