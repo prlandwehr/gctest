@@ -16,5 +16,5 @@
   "splash": {
     "autoHide": true,
     "universal": "resources/splash/portrait2048.png"
-  },
+  }
 }
