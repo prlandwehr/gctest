@@ -1,3 +1,5 @@
+//Input and visualization debugger for BubbleGame module. Should be unneeded once gc devkit integration is complete.
+
 var BubbleVisualDebug = (function(){
 	var hexwidth = Math.sqrt(3)*25;
 	var hexheight = 50;

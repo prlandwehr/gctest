@@ -16,6 +16,7 @@ var level1test = [
 	["y","y","","","","","","","","","",""],
 	["y","y","","","","","","","","","",""]];
 
+//BubbleGame Model
 var BubbleGame = (function(){
 	var grid = []; //odd-r horizontal layout offset coords
 	var validColors = ["b","g","p","r","y"]; //blue green purple red yellow

@@ -1,3 +1,4 @@
+//Bubble Model
 var Bubble = class {
 	constructor(color, hx, hy) {
 		this.isNull = false; //for unused spaces in game grid
