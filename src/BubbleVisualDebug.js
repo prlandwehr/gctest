@@ -3,12 +3,11 @@ var BubbleVisualDebug = (function(){
 	var hexheight = 50;
 	var circleradius = hexwidth;
 	var mousex, mousey, bubblex, bubbley;
-	var getMouseAngle = function() {
-		Math.atan2(mousey-bubbley,mousex,bubblex);
-	};
+	var activeTick = 0;
 
 	var init = function() {
-		jQuery("#bubblegrid").css("width",(8*hexwidth)+(0.5*hexwidth)+"px").css("min-height",(6*1.5*hexheight)+(0.25*hexheight)+"px").css("background-color","gray");
+		jQuery("#bubblegrid").css("width",(8*hexwidth)+(0.5*hexwidth)+"px").css("height",(6*1.5*hexheight)+(0.25*hexheight)+"px").css("background-color","gray");
+		//jQuery("#bubblegrid").css("width",(8*hexwidth)+(0.5*hexwidth)+"px").css("height",(5*1.75*hexheight)+"px").css("background-color","gray");
 		BubbleGame.initGrid();
 		var grid = BubbleGame.getGrid();
 		for(var x = 0; x < grid.length; x++) {
@@ -62,19 +61,29 @@ var BubbleVisualDebug = (function(){
 				jQuery("#bubblegrid").append("<div id='"+x+"_"+(y+1)+"' class='circle' style='"+style+"'></div>");
 			}
 		}
-		var centerw = (((8*hexwidth)+(0.5*hexwidth)) / 2) - (0.5*hexwidth);
-		var style = "bottom:0px;left:"+centerw+"px;background-color:red;";
+		var loadedb = BubbleGame.getLoadedBubble();
+		var lx = loadedb.activex;
+		var ly = loadedb.activey;
+		var gridw = g_gridsizex * g_hexwidth + (g_hexwidth/2);
+		var gridh = (g_gridsizey/2) * (g_hexheight*1.75);
+		var xy = [lx/gridw*jQuery("#bubblegrid").width(), ly/gridh*jQuery("#bubblegrid").height()];
+		//var centerw = (((8*hexwidth)+(0.5*hexwidth)) / 2) - (0.5*hexwidth);
+		var style = "top:"+xy[1]+"px;left:"+xy[0]+"px;background-color:red;";
 		jQuery("#bubblegrid").append("<div id='loaded' class='circle' style='"+style+"'></div>");
 		var style = "bottom:0px;left:0px;";
 		jQuery("#bubblegrid").append("<div id='next' class='circle' style='"+style+"'></div>");
 	};
 
 	var tick = function() {
-		//
+		renderBubbles();
 	};
 
 	var clicked = function(event) {
-		//
+		if(activeTick != 0) {
+			return;
+		}
+		BubbleGame.shootBubble(event.clientX, event.clientY);
+		activeTick = setInterval(tick,30);
 	};
 
 	var movement = function(event) {
