@@ -11,14 +11,26 @@ import src.MoleHill as MoleHill;
 
 /* Some game constants.
  */
-var score = 0,
-		high_score = 19,
-		hit_value = 1,
-		mole_interval = 600,
-		game_on = false,
-		game_length = 20000, //20 secs
-		countdown_secs = game_length / 1000,
-		lang = 'en';
+var img_bbl_r = new Image({url: "resources/images/ball_red.png"});
+var img_bbl_b = new Image({url: "resources/images/ball_blue.png"});
+var img_bbl_g = new Image({url: "resources/images/ball_green.png"});
+var img_bbl_p = new Image({url: "resources/images/ball_purple.png"});
+var img_bbl_y = new Image({url: "resources/images/ball_yellow.png"});
+var bubbleImages = {
+	"r": img_bbl_r,
+	"b": img_bbl_b,
+	"g": img_bbl_g,
+	"p": img_bbl_p,
+	"y": img_bbl_y,
+};
+var score = 0;
+var high_score = 19;
+var hit_value = 1;
+var mole_interval = 600;
+var game_on = false;
+var game_length = 20000; //20 secs
+var countdown_secs = game_length / 1000;
+var lang = 'en';
 
 /* The GameScreen view is a child of the main application.
  * By adding the scoreboard and the molehills as it's children,
@@ -73,6 +85,17 @@ exports = Class(ui.View, function (supr) {
 		this.style.width = 320;
 		this.style.height = 480;
 
+		//bubble
+		/*this._bubble1 = new ui.ImageView({
+			superview: this,
+			image: img_bbl_r,
+			x: 0,
+			y: 0,
+			width: 20,
+			height: 20
+		});*/
+
+
 		this._molehills = [];
 
 		for (var row = 0, len = layout.length; row < len; row++) {
@@ -121,11 +144,11 @@ function start_game_flow () {
 
 	animate(that._scoreboard).wait(1000)
 		.then(function () {
-			that._scoreboard.setText(text.READY);
+			that._scoreboard.setText("ready");
 		}).wait(1500).then(function () {
-			that._scoreboard.setText(text.SET);
+			that._scoreboard.setText("set");
 		}).wait(1500).then(function () {
-			that._scoreboard.setText(text.GO);
+			that._scoreboard.setText("go");
 			//start game ...
 			game_on = true;
 			play_game.call(that);
@@ -138,8 +161,8 @@ function start_game_flow () {
  * stop calling the moles and proceed to the end game.
  */
 function play_game () {
-	var i = setInterval(tick.bind(this), mole_interval),
-			j = setInterval(update_countdown.bind(this), 1000);
+	var i = setInterval(tick.bind(this), mole_interval);
+	var	j = setInterval(update_countdown.bind(this), 1000);
 
 	setTimeout(bind(this, function () {
 		game_on = false;
@@ -164,8 +187,8 @@ function play_game () {
 /* Pick a random, non-active, mole from our molehills.
  */
 function tick () {
-	var len = this._molehills.length,
-			molehill = this._molehills[Math.random() * len | 0];
+	var len = this._molehills.length;
+	var molehill = this._molehills[Math.random() * len | 0];
 
 	while (molehill.activeMole) {
 		molehill = this._molehills[Math.random() * len | 0];
@@ -186,7 +209,7 @@ function update_countdown () {
  */
 function end_game_flow () {
 	var isHighScore = (score > high_score),
-			end_msg = get_end_message(score, isHighScore);
+			end_msg = "done";
 
 	this._countdown.setText(''); //clear countdown text
 	//resize scoreboard text to fit everything
@@ -246,50 +269,3 @@ function reset_game () {
 		color: '#fff'
 	});
 }
-
-/*
- * Strings
- */
-
-function get_end_message (score, isHighScore) {
-	var moles = (score === 1) ? text.MOLE : text.MOLES,
-			end_msg = text.END_MSG_START + ' ' + score + ' ' + moles + '.\n';
-
-	if (isHighScore) {
-		end_msg += text.HIGH_SCORE + '\n';
-	} else {
-		//random taunt
-		var i = (Math.random() * text.taunts.length) | 0;
-		end_msg += text.taunts[i] + '\n';
-	}
-	return (end_msg += text.END_MSG_END);
-}
-
-var localized_strings = {
-	en: {
-		READY: "Ready ...",
-		SET: "Set ...",
-		GO: "Whack that Mole!",
-		MOLE: "mole",
-		MOLES: "moles",
-		END_MSG_START: "You whacked",
-		END_MSG_END: "Tap to play again",
-		HIGH_SCORE: "That's a new high score!"
-	}
-};
-
-localized_strings['en'].taunts = [
-	"Welcome to Loserville, population: you.", //max length
-	"You're an embarrassment!",
-	"You'll never catch me!",
-	"Your days are numbered, human.",
-	"Don't quit your day job.",
-	"Just press the screen, it's not hard.",
-	"You might be the worst I've seen.",
-	"You're just wasting my time.",
-	"Don't hate the playa, hate the game.",
-	"Make like a tree, and get out of here!"
-];
-
-//object of strings used in game
-var text = localized_strings[lang.toLowerCase()];

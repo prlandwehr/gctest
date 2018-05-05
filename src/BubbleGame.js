@@ -108,13 +108,13 @@ var BubbleGame = (function(){
 					var nolinks = true;
 					//check for an upwards link
 					for(var i = 0; i < group.length; i++) {
-						var links = group[i].getUpperCoords();
-						if(links.ul && !grid[links.ul[0]][links.ul[1]].isNull) {
-							nolinks = false;
-							break;
-						} else if(links.ur && !grid[links.ur[0]][links.ur[1]].isNull) {
-							nolinks = false;
-							break;
+						var links = group[i].getUpperCoordsArray();
+						for(var z = 0; z < links.length; z++) {
+							var isbubblenull = grid[ links[z][0] ][ links[z][1] ].isNull;
+							if(!isbubblenull) {
+								nolinks = false;
+								break;
+							}
 						}
 					}
 					//if no upwards links found nullify those bubbles
@@ -237,7 +237,7 @@ var BubbleGame = (function(){
 				toPop[i].isNull = true;
 				score += 100;
 			}
-			removeFloatingBubbles();
+			score += 100 * removeFloatingBubbles();
 		}
 		bouncedRight = false;
 		bouncedLeft = false;

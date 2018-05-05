@@ -124,6 +124,31 @@ var Bubble = class {
 		}
 		return neighbors;
 	}
+	//Return upper left and upper right neighbors
+	getUpperCoordsArray(gridx, gridy) {
+		//set bounds
+		if(typeof gridx === "undefined"){gridx = g_gridsizex;}
+		if(typeof gridy === "undefined"){gridy = g_gridsizey;}
+		var neighbors = [];
+		if(this.hy %2 == 0) {
+			//get neighbor coords even row
+			if(this.hy > 0 && this.hx > 0) {
+				neighbors.push([this.hx-1,this.hy-1]);
+			}
+			if(this.hy > 0) {
+				neighbors.push([this.hx,this.hy-1]);
+			}
+		} else {
+			//get neighbor coords odd row
+			if(this.hy > 0) {
+				neighbors.push([this.hx,this.hy-1]);
+			}
+			if(this.hy > 0 && this.hx < gridx - 1) {
+				neighbors.push([this.hx+1,this.hy-1]);
+			}
+		}
+		return neighbors;
+	}
 	//get XY coord for the center of the hexagon
 	getCenterXY() {
 		var centery = (0.5*this.height)+(0.75*this.height*this.hy);
