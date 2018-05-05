@@ -4,9 +4,8 @@ var g_hexwidth = Math.sqrt(3)*0.5;
 var g_hexheight = 0.5*2;
 var g_gridwidth = (g_gridsizex*g_hexwidth)+(0.5*g_hexwidth);
 var g_gridheight = (0.75*g_hexheight*g_gridsizey)+(0.25*g_hexheight);
-var g_hexradius = g_hexwidth/2;
-var g_shotangle = 0;
-var g_shotspeed = 0.3;
+var g_hexradius = g_hexwidth/2; //inner circle radius
+var g_shotspeed = 0.2; //amount hex moves per tick/frame
 var level1test = [
 	["r","r","r","","","","","","","","",""],
 	["r","r","r","","","","","","","","",""],
@@ -20,7 +19,7 @@ var level1test = [
 var BubbleGame = (function(){
 	var grid = []; //odd-r horizontal layout offset coords
 	var validColors = ["b","g","p","r","y"]; //blue green purple red yellow
-	var loadedBubble = null;
+	var loadedBubble = null; //bubble about to be shot or in flight
 	var nextBubble = null;
 	var playerAngle = 0;
 	var score = 0;
@@ -170,7 +169,7 @@ var BubbleGame = (function(){
 
 		loadedBubble.vx = g_shotspeed * Math.cos(angle);
 		loadedBubble.vy = -Math.abs(g_shotspeed * Math.sin(angle));
-		activeTick = setInterval(tick,100);
+		activeTick = setInterval(tick,16);
 	};
 	//
 	var tick = function() {
@@ -238,6 +237,11 @@ var BubbleGame = (function(){
 				score += 100;
 			}
 			removeFloatingBubbles();
+		}
+		bouncedRight = false;
+		bouncedLeft = false;
+		if(loadedBubble.hy == g_gridsizey - 1) {
+			//game over here
 		}
 		reloadActiveBubble();
 		BubbleVisualDebug.renderBubbles();

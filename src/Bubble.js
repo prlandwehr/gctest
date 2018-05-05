@@ -2,20 +2,21 @@ var Bubble = class {
 	constructor(color, hx, hy) {
 		this.isNull = false; //for unused spaces in game grid
 		this.isChecked = false; //for match checking
-		this.color = color;
+		this.color = color; //character indicating bubble color
 		//hex coordinant system
 		this.hx = hx;
 		this.hy = hy;
-		//screen coordinant system
+		//regular coordinant system [upper-left bubble coord]
 		this.activex;
 		this.activey;
 		//velocity
 		this.vx = 0;
 		this.vy = 0;
-		//screen width and height factors
+		//hex width and height
 		this.width = Math.sqrt(3)*0.5;
 		this.height = 0.5*2;
 	}
+	//Return neighboring hexes in a corner to hcoordinant mapping
 	getNeighborCoords(gridx, gridy) {
 		//set bounds
 		if(typeof gridx === "undefined"){gridx = g_gridsizex;}
@@ -53,6 +54,7 @@ var Bubble = class {
 		}
 		return neighbors;
 	}
+	//Return array of neighboring hexs' coordinants
 	getNeighborCoordsArray(gridx,gridy) {
 		//set bounds
 		if(typeof gridx === "undefined"){gridx = g_gridsizex;}
@@ -91,6 +93,7 @@ var Bubble = class {
 		}
 		return neighbors;
 	}
+	//Return upper left and upper right neighbors
 	getUpperCoords(gridx, gridy) {
 		//set bounds
 		if(typeof gridx === "undefined"){gridx = g_gridsizex;}
@@ -120,6 +123,7 @@ var Bubble = class {
 		}
 		return neighbors;
 	}
+	//get XY coord for the center of the hexagon
 	getCenterXY() {
 		var centery = (0.5*this.height)+(0.75*this.height*this.hy);
 		if(this.hy % 2 == 0) {
@@ -129,6 +133,7 @@ var Bubble = class {
 		}
 		return [centerx,centery];
 	}
+	//get XY coord for the upper left of the hex's containing box
 	getXY() {
 		var y = (0.75*this.height*this.hy);
 		if(this.hy % 2 == 0) {
@@ -138,9 +143,7 @@ var Bubble = class {
 		}
 		return [x,y];
 	}
-	intersectsBubble(bubble2) {
-		return 0;
-	}
+	//get the full color name of this bubble
 	getColorName() {
 		var colorname = "";
 		switch(this.color) { //["b","g","p","r","y"]
