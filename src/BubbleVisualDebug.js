@@ -42,8 +42,13 @@ var BubbleVisualDebug = (function(){
 				jQuery("#bubblegrid").append("<div id='"+x+"_"+(y+1)+"' class='circle' style='"+style+"'></div>");
 			}
 		}
-		var centerw = (((8*hexwidth)+(0.5*hexwidth)) / 2) - (0.5*hexwidth);
-		var style = "top:"+(hexheight*(5+0.75)+(0.5*hexheight*5))+"px;left:"+centerw+"px;background-color:"+BubbleGame.getLoadedBubble().getColorName()+";";
+		var loadedb = BubbleGame.getLoadedBubble();
+		var lx = loadedb.activex;
+		var ly = loadedb.activey;
+		var gridw = g_gridsizex * g_hexwidth + (g_hexwidth/2);
+		var gridh = ((g_gridsizey/2)*1.5*g_hexheight)+(0.25*g_hexheight);
+		var xy = [lx/gridw*debug_gridwidth, ly/gridh*debug_gridheight];
+		var style = "top:"+xy[1]+"px;left:"+xy[0]+"px;background-color:"+loadedb.getColorName()+";";
 		jQuery("#bubblegrid").append("<div id='loaded' class='circle' style='"+style+"'></div>");
 		var style = "bottom:0px;left:0px;background-color:"+BubbleGame.getNextBubble().getColorName()+";";
 		jQuery("#bubblegrid").append("<div id='next' class='circle' style='"+style+"'></div>");
@@ -77,9 +82,8 @@ var BubbleVisualDebug = (function(){
 		var lx = loadedb.activex;
 		var ly = loadedb.activey;
 		var gridw = g_gridsizex * g_hexwidth + (g_hexwidth/2);
-		var gridh = (6*1.5*g_hexheight)+(0.25*g_hexheight);//(g_gridsizey/2) * (g_hexheight*1.75);
-		var xy = [lx/gridw*jQuery("#bubblegrid").width(), ly/gridh*jQuery("#bubblegrid").height()];
-		//var centerw = (((8*hexwidth)+(0.5*hexwidth)) / 2) - (0.5*hexwidth);
+		var gridh = ((g_gridsizey/2)*1.5*g_hexheight)+(0.25*g_hexheight);
+		var xy = [lx/gridw*debug_gridwidth, ly/gridh*debug_gridheight];
 		var style = "top:"+xy[1]+"px;left:"+xy[0]+"px;background-color:"+loadedb.getColorName()+";";
 		jQuery("#bubblegrid").append("<div id='loaded' class='circle' style='"+style+"'></div>");
 		var style = "bottom:0px;left:0px;background-color:"+BubbleGame.getNextBubble().getColorName()+";";
@@ -98,9 +102,6 @@ var BubbleVisualDebug = (function(){
 
 		var style = "top:"+xy[1]+"px;left:"+xy[0]+"px;background-color:"+loadedb.getColorName()+";";
 		jQuery("#loaded").attr("style",style);
-
-		//var style = "bottom:0px;left:0px;background-color:"+BubbleGame.getNextBubble().getColorName()+";";
-		//jQuery("#next").attr("style",style);
 	};
 
 	var tick = function() {
