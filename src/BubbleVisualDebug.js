@@ -69,9 +69,32 @@ var BubbleVisualDebug = (function(){
 		jQuery("#bubblegrid").append("<div id='next' class='circle' style='"+style+"'></div>");
 	};
 
+	var tick = function() {
+		//
+	};
+
+	var clicked = function(event) {
+		//
+	};
+
+	var movement = function(event) {
+		var x1 = jQuery("#loaded").css("left");
+		x1 = parseFloat(x1.slice(0,x1.length-2)) + (hexwidth/2);
+		var y1 = jQuery("#loaded").css("top");
+		y1 = parseFloat(y1.slice(0,y1.length-2)) + (hexheight/2);
+		var angleRadians = Math.atan2(event.clientY - y1, event.clientX - x1);
+		var angleDeg = Math.atan2(event.clientY  - y1, event.clientX - x1) * 180 / Math.PI;
+		jQuery("#mousex").html("x:"+event.clientX);
+		jQuery("#mousey").html("y:"+event.clientY);
+		jQuery("#anglerad").html("rad:"+angleRadians);
+		jQuery("#angledeg").html("deg:"+angleDeg);
+	};
+
 	return {
 		"init":init,
-		"renderBubbles":renderBubbles
+		"renderBubbles":renderBubbles,
+		"clicked":clicked,
+		"movement":movement
 	};
 })();
 

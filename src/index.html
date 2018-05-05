@@ -9,9 +9,13 @@
         <link rel="stylesheet" type="text/css" href="index.css">
     </head>
     <body>
-        <div id="bubblegrid" style="">
-            
+        <div id="bubblegrid" onclick="BubbleVisualDebug.clicked(event)" onmousemove="BubbleVisualDebug.movement(event)" style="">
+            <!-- -->
         </div>
+        <div id="mousex" style="top:0px;right:0px;text-align:right;"></div>
+        <div id="mousey" style="top:20px;right:0px;text-align:right;"></div>
+        <div id="anglerad" style="top:40px;right:0px;text-align:right;"></div>
+        <div id="angledeg" style="top:60px;right:0px;text-align:right;"></div>
         <script src="jquery-1.12.4.min.js"></script>
         <script src="Bubble.js"></script>
         <script src="BubbleGame.js"></script>
