@@ -84,7 +84,7 @@ var Bubble = class {
 			if(coord[0] < 0 || coord[1] < 0) {
 				neighbors.splice(i,1);
 				i--;
-			} else if(coord[0] > gridx || coord[1] > gridy) {
+			} else if(coord[0] > gridx-1 || coord[1] > gridy-1) {
 				neighbors.splice(i,1);
 				i--;
 			}

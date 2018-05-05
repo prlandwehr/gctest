@@ -45,6 +45,8 @@ var BubbleVisualDebug = (function(){
 		jQuery("#bubblegrid").append("<div id='loaded' class='circle' style='"+style+"'></div>");
 		var style = "bottom:0px;left:0px;background-color:"+BubbleGame.getNextBubble().getColorName()+";";
 		jQuery("#bubblegrid").append("<div id='next' class='circle' style='"+style+"'></div>");
+
+		jQuery("#score").html("score:"+BubbleGame.getScore());
 	};
 
 	var renderBubbles = function() {
@@ -80,6 +82,8 @@ var BubbleVisualDebug = (function(){
 		jQuery("#bubblegrid").append("<div id='loaded' class='circle' style='"+style+"'></div>");
 		var style = "bottom:0px;left:0px;background-color:"+BubbleGame.getNextBubble().getColorName()+";";
 		jQuery("#bubblegrid").append("<div id='next' class='circle' style='"+style+"'></div>");
+
+		jQuery("#score").html("score:"+BubbleGame.getScore());
 	};
 
 	var updateShotRender = function() {

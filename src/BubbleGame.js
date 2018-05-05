@@ -76,7 +76,7 @@ var BubbleGame = (function(){
 		var itterateBubbles = function(hx,hy,color) {
 			var links = grid[hx][hy].getNeighborCoordsArray();
 			for(var i = 0; i < links.length; i++) {
-				var cBubble = grid[links[i][0]][links[i][1]];
+				var cBubble = grid[ links[i][0] ][ links[i][1] ];
 				if(!cBubble.isNull && cBubble.color == color && !cBubble.isChecked) {
 					grid[hx][hy].isChecked = true;
 					bubbleArray.push(cBubble);
@@ -191,6 +191,9 @@ var BubbleGame = (function(){
 		//top wall collision
 		if(loadedBubble.activey - g_hexradius <= 0) {
 			stick();
+			clearInterval(activeTick);
+			activeTick = 0;
+			return;
 		}
 		//bubble collision
 		for(var y = 0; y < g_gridsizey; y++) {
@@ -248,6 +251,10 @@ var BubbleGame = (function(){
 		return nextBubble;
 	};
 
+	var getScore = function() {
+		return score;
+	};
+
 	return {
 		"initGrid": initGrid,
 		"getGrid": getGrid,
@@ -257,6 +264,7 @@ var BubbleGame = (function(){
 		"stick":stick,
 		"shootBubble":shootBubble,
 		"getLoadedBubble": getLoadedBubble,
-		"getNextBubble": getNextBubble
+		"getNextBubble": getNextBubble,
+		"getScore": getScore
 	};
 })();
