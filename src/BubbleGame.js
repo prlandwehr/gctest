@@ -2,22 +2,22 @@ var g_gridsizex = 8;
 var g_gridsizey = 12; //last row is kill row
 var g_hexwidth = Math.sqrt(3)*0.5;
 var g_hexheight = 0.5*2;
-var g_hexradius = g_hexwidth;
+var g_gridwidth = (g_gridsizex*g_hexwidth)+(0.5*g_hexwidth);
+var g_gridheight = (0.75*g_hexheight*g_gridsizey)+(0.25*g_hexheight);
+var g_hexradius = g_hexwidth/2;
 var g_shotangle = 0;
-var g_shotspeed = 1;
+var g_shotspeed = 0.3;
 var level1test = [
-	["r","r","","","","","","","","","",""],
-	["r","r","","","","","","","","","",""],
-	["b","b","","","","","","","","","",""],
-	["b","b","","","","","","","","","",""],
+	["r","r","r","","","","","","","","",""],
+	["r","r","r","","","","","","","","",""],
+	["b","b","b","","","","","","","","",""],
+	["b","b","b","","","","","","","","",""],
 	["g","g","","","","","","","","","",""],
 	["g","g","","","","","","","","","",""],
 	["y","y","","","","","","","","","",""],
 	["y","y","","","","","","","","","",""]];
 
 var BubbleGame = (function(){
-	var gridsizex = g_gridsizex;
-	var gridsizey = g_gridsizey;
 	var grid = []; //odd-r horizontal layout offset coords
 	var validColors = ["b","g","p","r","y"]; //blue green purple red yellow
 	var loadedBubble = null;
@@ -30,14 +30,14 @@ var BubbleGame = (function(){
 
 	var initGrid = function() {
 		grid = [];
-		for(var x = 0; x < gridsizex; x++) {
+		for(var x = 0; x < g_gridsizex; x++) {
 			grid.push([]);
-			for(var y = 0; y < gridsizey; y++) {
+			for(var y = 0; y < g_gridsizey; y++) {
 				grid[x].push(new Bubble("b",x,y));
 				grid[x][y].isNull = true;
-				var center = grid[x][y].getCenterXY();
-				grid[x][y].activex = center[0];
-				grid[x][y].activey = center[1];
+				var coord = grid[x][y].getXY();
+				grid[x][y].activex = coord[0];
+				grid[x][y].activey = coord[1];
 			}
 		}
 		loadLevelArray(level1test);
@@ -47,9 +47,9 @@ var BubbleGame = (function(){
 	};
 
 	var loadLevelArray = function(arr) {
-		for(var x = 0; x < gridsizex; x++) {
+		for(var x = 0; x < g_gridsizex; x++) {
 			//grid.push([]);
-			for(var y = 0; y < gridsizey; y++) {
+			for(var y = 0; y < g_gridsizey; y++) {
 				if(arr[x][y] == "") {
 					grid[x][y].isNull = true;
 					grid[x][y].color = "";
@@ -95,16 +95,16 @@ var BubbleGame = (function(){
 	//remove bubbles that are floating after a pop
 	var removeFloatingBubbles = function() {
 		var numPopped = 0;
-		for(var y = 1; y < gridsizey; y++) {
+		for(var y = 1; y < g_gridsizey; y++) {
 			var group = [];
 			//itterate over rows starting from the top
-			for(var x = 0; x < gridsizex; x++) {
+			for(var x = 0; x < g_gridsizex; x++) {
 				//find groups of bubbles with horizontal connection
 				if(!grid[x][y].isNull) {
 					group.push(grid[x][y]);
 				}
 				//upon finding a group
-				if( (grid[x][y].isNull || x == gridsizex - 1) && group.length > 0){
+				if( (grid[x][y].isNull || x == g_gridsizex - 1) && group.length > 0){
 					var nolinks = true;
 					//check for an upwards link
 					for(var i = 0; i < group.length; i++) {
@@ -155,8 +155,8 @@ var BubbleGame = (function(){
 		if(nextBubble != null) {
 			loadedBubble = nextBubble;
 			setNextBubble();
-			loadedBubble.activex = (gridsizex+g_hexradius) / 2;
-			loadedBubble.activey = gridsizey - g_hexradius;
+			loadedBubble.activex = grid[Math.floor(g_gridsizex/2)][g_gridsizey-1].activex;
+			loadedBubble.activey = grid[g_gridsizex-1][g_gridsizey-1].activey;
 		}
 	};
 	//
@@ -165,12 +165,22 @@ var BubbleGame = (function(){
 			return;
 		}
 		//angle = Math.abs(angle);
-		loadedBubble.activex = (gridsizex+g_hexradius) / 2;
-		loadedBubble.activey = gridsizey - g_hexradius;
+		loadedBubble.activex = grid[Math.floor(g_gridsizex/2)][g_gridsizey-1].activex;
+		loadedBubble.activey = grid[g_gridsizex-1][g_gridsizey-1].activey;
+
+		/*if(angle <= 0 && angle > -Math.PI/2) {
+			angle = Math.Abs(angle);
+			loadedBubble.vx = g_shotspeed * Math.cos(angle);
+			loadedBubble.vy = g_shotspeed * Math.sin(angle);
+		} else if(angle < -Math.PI/2 && angle > -Math.PI) {
+			angle = Math.Abs(angle+(Math.PI/2));
+			loadedBubble.vx = -g_shotspeed * Math.cos(angle);
+			loadedBubble.vy = g_shotspeed * Math.sin(angle);
+		}*/
 
 		loadedBubble.vx = g_shotspeed * Math.cos(angle);
-		loadedBubble.vy = g_shotspeed * Math.sin(angle);
-		activeTick = setInterval(tick,60);
+		loadedBubble.vy = -Math.abs(g_shotspeed * Math.sin(angle));
+		activeTick = setInterval(tick,100);
 	};
 	//
 	var tick = function() {
@@ -178,12 +188,12 @@ var BubbleGame = (function(){
 		loadedBubble.activex += loadedBubble.vx;
 		loadedBubble.activey +=  loadedBubble.vy;
 		//left/right wall collision
-		if(loadedBubble.activex - g_hexradius < 0 && !bouncedLeft) {
+		if(loadedBubble.activex < 0 && !bouncedLeft) {
 			loadedBubble.vx = -loadedBubble.vx;
 			bouncedLeft = true;
 			bouncedRight = false;
 		}
-		if(loadedBubble.activex + g_hexradius > g_gridsizex && !bouncedRight) {
+		if(loadedBubble.activex >= g_gridwidth - g_hexwidth && !bouncedRight) {
 			loadedBubble.vx = -loadedBubble.vx;
 			bouncedRight = true;
 			bouncedLeft = false;
@@ -193,11 +203,11 @@ var BubbleGame = (function(){
 			stick();
 		}
 		//bubble collision
-		for(var y = 0; y < gridsizey; y++) {
+		for(var y = 0; y < g_gridsizey; y++) {
 			//itterate over rows starting from the top
-			for(var x = 0; x < gridsizex; x++) {
+			for(var x = 0; x < g_gridsizex; x++) {
 				if(!grid[x][y].isNull) {
-					var cBubbleCoord = grid[x][y].getCenterXY();
+					var cBubbleCoord = grid[x][y].getXY();
 					var bubbledist = Math.sqrt( Math.pow(cBubbleCoord[0]-loadedBubble.activex,2) + Math.pow(cBubbleCoord[1]-loadedBubble.activey,2) );
 					if(bubbledist <= g_hexradius*2) {
 						stick();
@@ -212,10 +222,10 @@ var BubbleGame = (function(){
 	//
 	var stick = function() {
 		var closest = [null,1000];//bubble, dist
-		for(var y = 0; y < gridsizey; y++) {
+		for(var y = 0; y < g_gridsizey; y++) {
 			//itterate over rows starting from the top
-			for(var x = 0; x < gridsizex; x++) {
-				var cBubbleCoord = grid[x][y].getCenterXY();
+			for(var x = 0; x < g_gridsizex; x++) {
+				var cBubbleCoord = grid[x][y].getXY();
 				var bubbledist = Math.sqrt( Math.pow(cBubbleCoord[0]-loadedBubble.activex,2) + Math.pow(cBubbleCoord[1]-loadedBubble.activey,2) );
 				if(closest[0] == null) {
 					closest = [grid[x][y], bubbledist];

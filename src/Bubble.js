@@ -122,12 +122,21 @@ var Bubble = class {
 	}
 	getCenterXY() {
 		var centery = (0.5*this.height)+(0.75*this.height*this.hy);
-		if(this.hy %2 == 0) {
+		if(this.hy % 2 == 0) {
 			var centerx = 0.5*this.width*this.hx;
 		} else {
 			var centerx = (0.5*this.width) + (0.5*this.width*this.hx);
 		}
 		return [centerx,centery];
+	}
+	getXY() {
+		var y = (0.75*this.height*this.hy);
+		if(this.hy % 2 == 0) {
+			var x = this.width*this.hx;
+		} else {
+			var x = (0.5*this.width) + (this.width*this.hx);
+		}
+		return [x,y];
 	}
 	intersectsBubble(bubble2) {
 		return 0;

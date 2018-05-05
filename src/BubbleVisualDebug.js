@@ -1,17 +1,17 @@
 var BubbleVisualDebug = (function(){
 	var hexwidth = Math.sqrt(3)*25;
 	var hexheight = 50;
-	var circleradius = hexwidth;
-	var mousex, mousey, bubblex, bubbley;
+	var circleradius = hexwidth / 2;
 	var activeTick = 0;
+	var debug_gridwidth = (g_gridsizex*hexwidth)+(0.5*hexwidth);
+	var debug_gridheight = (0.75*hexheight*g_gridsizey)+(0.25*hexheight);
 
 	var init = function() {
-		jQuery("#bubblegrid").css("width",(8*hexwidth)+(0.5*hexwidth)+"px").css("height",(6*1.5*hexheight)+(0.25*hexheight)+"px").css("background-color","gray");
-		//jQuery("#bubblegrid").css("width",(8*hexwidth)+(0.5*hexwidth)+"px").css("height",(5*1.75*hexheight)+"px").css("background-color","gray");
+		jQuery("#bubblegrid").css("width",debug_gridwidth+"px").css("height",debug_gridheight+"px").css("background-color","gray");
 		BubbleGame.initGrid();
 		var grid = BubbleGame.getGrid();
 		for(var x = 0; x < grid.length; x++) {
-			for(var y = 0; y < grid[x].length/2; y++) {
+			for(var y = 0; y < grid[x].length; y=y+2) {
 				//hexagons
 				/*
 				//even
@@ -22,17 +22,17 @@ var BubbleVisualDebug = (function(){
 				jQuery("#bubblegrid").append("<div id='"+x+"_"+(y+1)+"' class='hexagon' style='"+style+"'></div>");
 				*/
 				//circles
-				var style = "top:"+(hexheight*y+(0.5*hexheight*y))+"px;"+"left:"+(hexwidth*x)+"px;"+"background-color:"+grid[x][y].getColorName()+";";
+				var style = "top:"+(0.75*hexheight*y)+"px;"+"left:"+(hexwidth*x)+"px;"+"background-color:"+grid[x][y].getColorName()+";";
 				if(grid[x][y].isNull) {
-					style += "display:none";
+					//style += "display:none";
 				}
-				jQuery("#bubblegrid").append("<div id='"+x+"_"+(y*2)+"' class='circle' style='"+style+"'></div>");
+				jQuery("#bubblegrid").append("<div id='"+x+"_"+y+"' class='circle' style='"+style+"'></div>");
 				// odd
-				var style = "top:"+(hexheight*(y+0.75)+(0.5*hexheight*y))+"px;"+"left:"+(hexwidth*(x+0.5))+"px;"+"background-color:"+grid[x][y+1].getColorName()+";";
+				var style = "top:"+(0.75*hexheight*(y+1))+"px;"+"left:"+(hexwidth*(x+0.5))+"px;"+"background-color:"+grid[x][y+1].getColorName()+";";
 				if(grid[x][y+1].isNull) {
-					style += "display:none";
+					//style += "display:none";
 				}
-				jQuery("#bubblegrid").append("<div id='"+x+"_"+((y*2)+1)+"' class='circle' style='"+style+"'></div>");
+				jQuery("#bubblegrid").append("<div id='"+x+"_"+(y+1)+"' class='circle' style='"+style+"'></div>");
 			}
 		}
 		var centerw = (((8*hexwidth)+(0.5*hexwidth)) / 2) - (0.5*hexwidth);
@@ -46,15 +46,15 @@ var BubbleVisualDebug = (function(){
 		jQuery("#bubblegrid").html("");
 		var grid = BubbleGame.getGrid();
 		for(var x = 0; x < grid.length; x++) {
-			for(var y = 0; y < grid[x].length/2; y++) {
+			for(var y = 0; y < grid[x].length; y=y+2) {
 				//circles
-				var style = "top:"+(hexheight*y+(0.5*hexheight*y))+"px;"+"left:"+(hexwidth*x)+"px;"+"background-color:"+grid[x][y].getColorName()+";";
+				var style = "top:"+(0.75*hexheight*y)+"px;"+"left:"+(hexwidth*x)+"px;"+"background-color:"+grid[x][y].getColorName()+";";
 				if(grid[x][y].isNull) {
 					style += "display:none";
 				}
 				jQuery("#bubblegrid").append("<div id='"+x+"_"+y+"' class='circle' style='"+style+"'></div>");
 				// odd
-				var style = "top:"+(hexheight*(y+0.75)+(0.5*hexheight*y))+"px;"+"left:"+(hexwidth*(x+0.5))+"px;"+"background-color:"+grid[x][y+1].getColorName()+";";
+				var style = "top:"+(0.75*hexheight*(y+1))+"px;"+"left:"+(hexwidth*(x+0.5))+"px;"+"background-color:"+grid[x][y+1].getColorName()+";";
 				if(grid[x][y+1].isNull) {
 					style += "display:none";
 				}
@@ -65,7 +65,7 @@ var BubbleVisualDebug = (function(){
 		var lx = loadedb.activex;
 		var ly = loadedb.activey;
 		var gridw = g_gridsizex * g_hexwidth + (g_hexwidth/2);
-		var gridh = (g_gridsizey/2) * (g_hexheight*1.75);
+		var gridh = (6*1.5*g_hexheight)+(0.25*g_hexheight);//(g_gridsizey/2) * (g_hexheight*1.75);
 		var xy = [lx/gridw*jQuery("#bubblegrid").width(), ly/gridh*jQuery("#bubblegrid").height()];
 		//var centerw = (((8*hexwidth)+(0.5*hexwidth)) / 2) - (0.5*hexwidth);
 		var style = "top:"+xy[1]+"px;left:"+xy[0]+"px;background-color:red;";
@@ -74,8 +74,19 @@ var BubbleVisualDebug = (function(){
 		jQuery("#bubblegrid").append("<div id='next' class='circle' style='"+style+"'></div>");
 	};
 
+	var updateShotRender = function() {
+		var loadedb = BubbleGame.getLoadedBubble();
+		jQuery("#vx").html("vx"+ loadedb.vx);
+		jQuery("#vy").html("vy"+ loadedb.vy);
+		var lx = loadedb.activex;
+		var ly = loadedb.activey;
+		var xy = [(lx/g_gridwidth*debug_gridwidth), (ly/g_gridheight*debug_gridheight)];
+		var style = "top:"+xy[1]+"px;left:"+xy[0]+"px;background-color:red;";
+		jQuery("#loaded").attr("style",style);
+	};
+
 	var tick = function() {
-		renderBubbles();
+		updateShotRender();
 	};
 
 	var clicked = function(event) {
@@ -83,7 +94,7 @@ var BubbleVisualDebug = (function(){
 			return;
 		}
 		BubbleGame.shootBubble(event.clientX, event.clientY);
-		activeTick = setInterval(tick,30);
+		activeTick = setInterval(tick,16);
 	};
 
 	var movement = function(event) {
