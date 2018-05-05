@@ -155,7 +155,7 @@ var BubbleGame = (function(){
 		if(nextBubble != null) {
 			loadedBubble = nextBubble;
 			setNextBubble();
-			loadedBubble.activex = grid[Math.floor(g_gridsizex/2)][g_gridsizey-1].activex;
+			loadedBubble.activex = (g_gridwidth / 2) - g_hexradius;
 			loadedBubble.activey = grid[g_gridsizex-1][g_gridsizey-1].activey;
 		}
 	};
@@ -164,19 +164,9 @@ var BubbleGame = (function(){
 		if(activeTick != 0) {
 			return;
 		}
-		//angle = Math.abs(angle);
-		loadedBubble.activex = grid[Math.floor(g_gridsizex/2)][g_gridsizey-1].activex;
+		
+		loadedBubble.activex = (g_gridwidth / 2) - g_hexradius;
 		loadedBubble.activey = grid[g_gridsizex-1][g_gridsizey-1].activey;
-
-		/*if(angle <= 0 && angle > -Math.PI/2) {
-			angle = Math.Abs(angle);
-			loadedBubble.vx = g_shotspeed * Math.cos(angle);
-			loadedBubble.vy = g_shotspeed * Math.sin(angle);
-		} else if(angle < -Math.PI/2 && angle > -Math.PI) {
-			angle = Math.Abs(angle+(Math.PI/2));
-			loadedBubble.vx = -g_shotspeed * Math.cos(angle);
-			loadedBubble.vy = g_shotspeed * Math.sin(angle);
-		}*/
 
 		loadedBubble.vx = g_shotspeed * Math.cos(angle);
 		loadedBubble.vy = -Math.abs(g_shotspeed * Math.sin(angle));
