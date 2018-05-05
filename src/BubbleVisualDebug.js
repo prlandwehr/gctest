@@ -13,24 +13,29 @@ var BubbleVisualDebug = (function(){
 		for(var x = 0; x < grid.length; x++) {
 			for(var y = 0; y < grid[x].length; y=y+2) {
 				//hexagons
-				/*
 				//even
-				var style = "top:"+(hexheight*y+(0.5*hexheight*y))+"px;"+"left:"+(hexwidth*x)+"px;"+"background-color:"+grid[x][y].getColorName()+";";
+				/*var style = "top:"+(0.75*hexheight*y)+"px;"+"left:"+(hexwidth*x)+"px;"+"background-color:"+grid[x][y].getColorName()+";";
+				if(grid[x][y].isNull) {
+					//style += "display:none";
+				}
 				jQuery("#bubblegrid").append("<div id='"+x+"_"+y+"' class='hexagon' style='"+style+"'></div>");
 				// odd
-				var style = "top:"+(hexheight*(y+0.75)+(0.5*hexheight*y))+"px;"+"left:"+(hexwidth*(x+0.5))+"px;"+"background-color:"+grid[x][y+1].getColorName()+";";
-				jQuery("#bubblegrid").append("<div id='"+x+"_"+(y+1)+"' class='hexagon' style='"+style+"'></div>");
-				*/
+				var style = "top:"+(0.75*hexheight*(y+1))+"px;"+"left:"+(hexwidth*(x+0.5))+"px;"+"background-color:"+grid[x][y+1].getColorName()+";";
+				if(grid[x][y+1].isNull) {
+					//style += "display:none";
+				}
+				jQuery("#bubblegrid").append("<div id='"+x+"_"+(y+1)+"' class='hexagon' style='"+style+"'></div>");*/
+				
 				//circles
 				var style = "top:"+(0.75*hexheight*y)+"px;"+"left:"+(hexwidth*x)+"px;"+"background-color:"+grid[x][y].getColorName()+";";
 				if(grid[x][y].isNull) {
-					//style += "display:none";
+					style += "display:none";
 				}
 				jQuery("#bubblegrid").append("<div id='"+x+"_"+y+"' class='circle' style='"+style+"'></div>");
 				// odd
 				var style = "top:"+(0.75*hexheight*(y+1))+"px;"+"left:"+(hexwidth*(x+0.5))+"px;"+"background-color:"+grid[x][y+1].getColorName()+";";
 				if(grid[x][y+1].isNull) {
-					//style += "display:none";
+					style += "display:none";
 				}
 				jQuery("#bubblegrid").append("<div id='"+x+"_"+(y+1)+"' class='circle' style='"+style+"'></div>");
 			}
@@ -38,11 +43,14 @@ var BubbleVisualDebug = (function(){
 		var centerw = (((8*hexwidth)+(0.5*hexwidth)) / 2) - (0.5*hexwidth);
 		var style = "top:"+(hexheight*(5+0.75)+(0.5*hexheight*5))+"px;left:"+centerw+"px;background-color:"+BubbleGame.getLoadedBubble().getColorName()+";";
 		jQuery("#bubblegrid").append("<div id='loaded' class='circle' style='"+style+"'></div>");
-		var style = "top:"+(hexheight*(5+0.75)+(0.5*hexheight*5))+"px;left:0px;";
+		var style = "bottom:0px;left:0px;background-color:"+BubbleGame.getNextBubble().getColorName()+";";
 		jQuery("#bubblegrid").append("<div id='next' class='circle' style='"+style+"'></div>");
 	};
 
 	var renderBubbles = function() {
+		clearInterval(activeTick);
+		activeTick = 0;
+
 		jQuery("#bubblegrid").html("");
 		var grid = BubbleGame.getGrid();
 		for(var x = 0; x < grid.length; x++) {
@@ -70,7 +78,7 @@ var BubbleVisualDebug = (function(){
 		//var centerw = (((8*hexwidth)+(0.5*hexwidth)) / 2) - (0.5*hexwidth);
 		var style = "top:"+xy[1]+"px;left:"+xy[0]+"px;background-color:"+loadedb.getColorName()+";";
 		jQuery("#bubblegrid").append("<div id='loaded' class='circle' style='"+style+"'></div>");
-		var style = "bottom:0px;left:0px;";
+		var style = "bottom:0px;left:0px;background-color:"+BubbleGame.getNextBubble().getColorName()+";";
 		jQuery("#bubblegrid").append("<div id='next' class='circle' style='"+style+"'></div>");
 	};
 
@@ -81,8 +89,12 @@ var BubbleVisualDebug = (function(){
 		var lx = loadedb.activex;
 		var ly = loadedb.activey;
 		var xy = [(lx/g_gridwidth*debug_gridwidth), (ly/g_gridheight*debug_gridheight)];
+
 		var style = "top:"+xy[1]+"px;left:"+xy[0]+"px;background-color:"+loadedb.getColorName()+";";
 		jQuery("#loaded").attr("style",style);
+
+		//var style = "bottom:0px;left:0px;background-color:"+BubbleGame.getNextBubble().getColorName()+";";
+		//jQuery("#next").attr("style",style);
 	};
 
 	var tick = function() {

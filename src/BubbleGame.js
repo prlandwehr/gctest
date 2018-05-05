@@ -164,7 +164,7 @@ var BubbleGame = (function(){
 		if(activeTick != 0) {
 			return;
 		}
-		
+
 		loadedBubble.activex = (g_gridwidth / 2) - g_hexradius;
 		loadedBubble.activey = grid[g_gridsizex-1][g_gridsizey-1].activey;
 
@@ -229,12 +229,15 @@ var BubbleGame = (function(){
 		grid[closest[0].hx][closest[0].hy] = loadedBubble;
 		//pop
 		var toPop = getPoppingBubbles(loadedBubble.hx,loadedBubble.hy,loadedBubble.color);
-		for(var i = 0; i < toPop.length; i++) {
-			toPop.isNull = true;
-			score += 100;
+		if(toPop.length > 2) {
+			for(var i = 0; i < toPop.length; i++) {
+				toPop[i].isNull = true;
+				score += 100;
+			}
+			removeFloatingBubbles();
 		}
-		removeFloatingBubbles();
 		reloadActiveBubble();
+		BubbleVisualDebug.renderBubbles();
 	};
 
 	var getLoadedBubble = function() {
