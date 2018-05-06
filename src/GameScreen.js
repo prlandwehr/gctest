@@ -12,6 +12,7 @@ import src.MoleHill as MoleHill;
 
 /* Some game constants.
  */
+//Visual resource constants
 var img_bbl_r = new Image({url: "resources/images/ball_red.png"});
 var img_bbl_b = new Image({url: "resources/images/ball_blue.png"});
 var img_bbl_g = new Image({url: "resources/images/ball_green.png"});
@@ -24,6 +25,34 @@ var bubbleImages = {
 	"p": img_bbl_p,
 	"y": img_bbl_y,
 };
+//BubbleGame.js constants
+var g_gridsizex = 8;
+var g_gridsizey = 12; //last row is kill row
+var g_hexwidth = Math.sqrt(3)*0.5;
+var g_hexheight = 0.5*2;
+var g_gridwidth = (g_gridsizex*g_hexwidth)+(0.5*g_hexwidth);
+var g_gridheight = (0.75*g_hexheight*g_gridsizey)+(0.25*g_hexheight);
+var g_hexradius = g_hexwidth/2; //inner circle radius
+var g_shotspeed = 0.2; //amount hex moves per tick/frame
+var level1test = [
+	["r","r","r","","","","","","","","",""],
+	["r","r","r","","","","","","","","",""],
+	["b","b","b","","","","","","","","",""],
+	["b","b","b","","","","","","","","",""],
+	["g","g","","","","","","","","","",""],
+	["g","g","","","","","","","","","",""],
+	["y","y","","","","","","","","","",""],
+	["y","y","","","","","","","","","",""]];
+//BubbleVisualDebug.js constants
+var hexwidth = Math.sqrt(3)*15;
+var hexheight = 30;
+var circleradius = hexwidth / 2;
+var activeTick = 0;
+var debug_gridwidth = (g_gridsizex*hexwidth)+(0.5*hexwidth);
+var debug_gridheight = (0.75*hexheight*g_gridsizey)+(0.25*hexheight);
+var LoadedBubble = null;
+var NextBubble = null;
+//Other constants
 var score = 0;
 var high_score = 19;
 var hit_value = 1;
@@ -32,6 +61,8 @@ var game_on = false;
 var game_length = 20000; //20 secs
 var countdown_secs = game_length / 1000;
 var lang = 'en';
+
+var loadedbubblestart = [0,0];
 
 /* The GameScreen view is a child of the main application.
  * By adding the scoreboard and the molehills as it's children,
@@ -48,20 +79,21 @@ exports = Class(ui.View, function (supr) {
 
 		supr(this, 'init', [opts]);
 
+		activeTick = 0;
+
+		//this.LoadedBubble = null;
+		//this.NextBubble = null;
+
 		this.build();
 	};
 
 	this.initBubbleGame = function() {
-		var hexwidth = Math.sqrt(3)*15;
-		var hexheight = 30;
-		var circleradius = hexwidth / 2;
-		var activeTick = 0;
-		var debug_gridwidth = (g_gridsizex*hexwidth)+(0.5*hexwidth);
-		var debug_gridheight = (0.75*hexheight*g_gridsizey)+(0.25*hexheight);
+		//
 
 		BubbleGame.initGrid();
 		var grid = BubbleGame.getGrid();
 		
+		//create level's bubbles
 		for(var x = 0; x < grid.length; x++) {
 			for(var y = 0; y < grid[x].length; y=y+2) {
 				//circles
@@ -97,6 +129,100 @@ exports = Class(ui.View, function (supr) {
 					});
 				}
 			}
+		}
+
+		//create loaded and next bubble
+		var loadedb = BubbleGame.getLoadedBubble();
+		var lx = loadedb.activex;
+		var ly = loadedb.activey;
+		var gridw = g_gridsizex * g_hexwidth + (g_hexwidth/2);
+		var gridh = ((g_gridsizey/2)*1.5*g_hexheight)+(0.25*g_hexheight);
+		var xy = [lx/gridw*debug_gridwidth, ly/gridh*debug_gridheight];
+		loadedbubblestart = [lx,ly];
+		LoadedBubble = new ui.ImageView({
+			superview: this,
+			image: bubbleImages[loadedb.color],
+			x: xy[0],
+			y: xy[1],
+			width: hexwidth,
+			height: hexheight
+		});
+		NextBubble = new ui.ImageView({
+			superview: this,
+			image: bubbleImages[BubbleGame.getNextBubble().color],
+			x: debug_gridwidth,
+			y: debug_gridheight,
+			width: hexwidth,
+			height: hexheight
+		});
+
+		//input section
+		this.inputBox = new ui.View({
+			superview: this,
+			x: 0,
+			y: 0,
+			width: debug_gridwidth,
+			height: debug_gridheight
+		});
+		this.inputBox.on('InputSelect', bind(this, function (event) {
+			var x = event.srcPoint.x;
+			var y = event.srcPoint.y;
+			//console.log("x:"+x+" y:"+y);
+
+			if(activeTick != 0) {
+				return;
+			}
+			//calculate shot angle
+			var x1 = LoadedBubble.getPosition().x;
+			var y1 = LoadedBubble.getPosition().y;
+			var angleRadians = Math.atan2(y - y1, x - x1);
+			var angleDeg = Math.atan2(y - y1, x - x1) * 180 / Math.PI;
+
+			BubbleGame.shootBubble(angleRadians);
+			activeTick = setInterval(this.bubbleTick,16);
+		}));
+	};
+
+	this.bubbleTick = function(){
+		var loadedb = BubbleGame.getLoadedBubble();
+		var lx = loadedb.activex;
+		var ly = loadedb.activey;
+		if(lx == loadedbubblestart[0] && ly == loadedbubblestart[1]) {
+			//
+		} else {
+			var xy = [(lx/g_gridwidth*debug_gridwidth), (ly/g_gridheight*debug_gridheight)];
+			LoadedBubble.updateOpts({x:xy[0], y:xy[1]});
+		}
+		//
+		if(BubbleGame.getTickID() == 0) {
+			clearInterval(activeTick);
+			activeTick = 0;
+			//
+			var parents = LoadedBubble.getParents();
+			var gamescr = parents[parents.length - 1];
+			//create loaded and next bubble
+			var loadedb = BubbleGame.getLoadedBubble();
+			var lx = loadedb.activex;
+			var ly = loadedb.activey;
+			var gridw = g_gridsizex * g_hexwidth + (g_hexwidth/2);
+			var gridh = ((g_gridsizey/2)*1.5*g_hexheight)+(0.25*g_hexheight);
+			var xy = [lx/gridw*debug_gridwidth, ly/gridh*debug_gridheight];
+			LoadedBubble = new ui.ImageView({
+				superview: gamescr,
+				image: bubbleImages[loadedb.color],
+				x: xy[0],
+				y: xy[1],
+				width: hexwidth,
+				height: hexheight
+			});
+			NextBubble = new ui.ImageView({
+				superview: gamescr,
+				image: bubbleImages[BubbleGame.getNextBubble().color],
+				x: debug_gridwidth,
+				y: debug_gridheight,
+				width: hexwidth,
+				height: hexheight
+			});
 		}
 	};
 
@@ -137,14 +263,6 @@ exports = Class(ui.View, function (supr) {
 
 		//bubble
 		this.initBubbleGame();
-		/*new ui.ImageView({
-			superview: this,
-			image: img_bbl_r,
-			x: 0,
-			y: 0,
-			width: 50,
-			height: 50
-		});*/
 
 
 		this._molehills = [];
@@ -326,24 +444,6 @@ function reset_game () {
 *******************************************************************************************************
 *******************************************************************************************************
 *******************************************************************************************************/
-
-var g_gridsizex = 8;
-var g_gridsizey = 12; //last row is kill row
-var g_hexwidth = Math.sqrt(3)*0.5;
-var g_hexheight = 0.5*2;
-var g_gridwidth = (g_gridsizex*g_hexwidth)+(0.5*g_hexwidth);
-var g_gridheight = (0.75*g_hexheight*g_gridsizey)+(0.25*g_hexheight);
-var g_hexradius = g_hexwidth/2; //inner circle radius
-var g_shotspeed = 0.2; //amount hex moves per tick/frame
-var level1test = [
-	["r","r","r","","","","","","","","",""],
-	["r","r","r","","","","","","","","",""],
-	["b","b","b","","","","","","","","",""],
-	["b","b","b","","","","","","","","",""],
-	["g","g","","","","","","","","","",""],
-	["g","g","","","","","","","","","",""],
-	["y","y","","","","","","","","","",""],
-	["y","y","","","","","","","","","",""]];
 
 //BubbleGame Model
 var BubbleGame = (function(){
@@ -574,7 +674,8 @@ var BubbleGame = (function(){
 			//game over here
 		}
 		reloadActiveBubble();
-		BubbleVisualDebug.renderBubbles();
+		//render bubbles here
+		//should happen automatically based on tick polling now
 	};
 
 	var getLoadedBubble = function() {
@@ -589,6 +690,10 @@ var BubbleGame = (function(){
 		return score;
 	};
 
+	var getTickID = function() {
+		return activeTick;
+	}
+
 	return {
 		"initGrid": initGrid,
 		"getGrid": getGrid,
@@ -599,7 +704,8 @@ var BubbleGame = (function(){
 		"shootBubble":shootBubble,
 		"getLoadedBubble": getLoadedBubble,
 		"getNextBubble": getNextBubble,
-		"getScore": getScore
+		"getScore": getScore,
+		"getTickID": getTickID
 	};
 })();
 
