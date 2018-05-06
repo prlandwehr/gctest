@@ -123,8 +123,8 @@ var BubbleGame = (function(){
 							group[i].isNull = true;
 							numPopped++;
 						}
-						group = [];
 					}
+					group = [];
 				}
 			}
 		}
