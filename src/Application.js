@@ -27,16 +27,17 @@ exports = Class(GC.Application, function () {
 
 		// Create a stackview of size 320x480, then scale it to fit horizontally
 		// Add a new StackView to the root of the scene graph
+		var wscale = device.width / 320;
 		var rootView = new StackView({
 			superview: this,
-			// x: device.width / 2 - 160,
-			// y: device.height / 2 - 240,
-			x: 0,
-			y: 0,
+			x: (device.width / 2) - (160 * wscale),
+			y: (device.height / 2) - (240 * wscale),
+			//x: 0,
+			//y: 0,
 			width: 320,
 			height: 480,
 			clip: true,
-			scale: device.width / 320
+			scale: wscale
 		});
 
 		rootView.push(titlescreen);
