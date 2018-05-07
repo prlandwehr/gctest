@@ -114,7 +114,7 @@ exports = Class(ui.View, function (supr) {
 		//create level's bubbles
 		for(var x = 0; x < grid.length; x++) {
 			for(var y = 0; y < grid[x].length; y=y+2) {
-				//circles
+				//even
 				var cx = hexwidth*x;
 				var cy = 0.75*hexheight*y;
 				var cimg = bubbleImages[grid[x][y].color];
@@ -192,8 +192,7 @@ exports = Class(ui.View, function (supr) {
 			//
 			var parents = LoadedBubble.getParents();
 			var gamescr = parents[parents.length - 1];
-			//remove any matches
-			if(tickResults[1].length > 0) {
+			if(tickResults[1].length > 0) { //remove shot bubble
 				gamescr.removeSubview(LoadedBubble);
 			} else {
 				//stick shot
@@ -207,10 +206,9 @@ exports = Class(ui.View, function (supr) {
 				}
 				LoadedBubble.updateOpts({x:cx, y:cy});
 				ActiveGrid[last[0]][last[1]] = LoadedBubble;
-
 			}
+			//remove matched bubbles
 			for(var i = 0; i < tickResults[1].length; i++) {
-				//parent remove
 				var currentTickResult = tickResults[1][i];
 				var currentActiveBubble = ActiveGrid[currentTickResult.hx][currentTickResult.hy];
 				if(currentActiveBubble != null) {
@@ -255,7 +253,7 @@ exports = Class(ui.View, function (supr) {
 				return;
 			}
 
-			//create loaded and next bubble
+			//reload bubble
 			loadedb = BubbleGame.getLoadedBubble();
 			var lx = loadedb.activex;
 			var ly = loadedb.activey;
@@ -273,7 +271,7 @@ exports = Class(ui.View, function (supr) {
 				height: hexheight
 			});
 		} else {
-			//no collision
+			//no collision occured
 		}
 	};
 
