@@ -8,7 +8,6 @@ import ui.View;
 import ui.ImageView;
 import ui.resource.Image as Image;
 import ui.TextView;
-import src.MoleHill as MoleHill;
 
 //Visual resource constants
 var img_bbl_r = new Image({url: "resources/images/ball_red.png"});
@@ -43,8 +42,8 @@ var level1test = [
 	["y","y","","","","","","","","","",""]
 ];
 //BubbleVisualDebug.js constants
-var hexwidth = Math.sqrt(3)*15;
-var hexheight = 30;
+var hexwidth = Math.sqrt(3)*21;
+var hexheight = 21*2;
 var circleradius = hexwidth / 2;
 var activeTick = 0;
 var debug_gridwidth = (g_gridsizex*hexwidth)+(0.5*hexwidth);
@@ -150,8 +149,8 @@ exports = Class(ui.View, function (supr) {
 		NextBubble = new ui.ImageView({
 			superview: this,
 			image: bubbleImages[BubbleGame.getNextBubble().color],
-			x: debug_gridwidth,
-			y: debug_gridheight,
+			x: 0,
+			y: debug_gridheight-hexheight,
 			width: hexwidth,
 			height: hexheight
 		});
@@ -232,19 +231,13 @@ exports = Class(ui.View, function (supr) {
 			var gridw = g_gridsizex * g_hexwidth + (g_hexwidth/2);
 			var gridh = ((g_gridsizey/2)*1.5*g_hexheight)+(0.25*g_hexheight);
 			var xy = [lx/gridw*debug_gridwidth, ly/gridh*debug_gridheight];
-			LoadedBubble = new ui.ImageView({
-				superview: gamescr,
-				image: bubbleImages[loadedb.color],
-				x: xy[0],
-				y: xy[1],
-				width: hexwidth,
-				height: hexheight
-			});
+			LoadedBubble = NextBubble;
+			LoadedBubble.updateOpts({x:xy[0], y:xy[1]});
 			NextBubble = new ui.ImageView({
 				superview: gamescr,
 				image: bubbleImages[BubbleGame.getNextBubble().color],
-				x: debug_gridwidth,
-				y: debug_gridheight,
+				x: 0,
+				y: debug_gridheight-hexheight,
 				width: hexwidth,
 				height: hexheight
 			});
