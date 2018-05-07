@@ -26,6 +26,7 @@ var BubbleGame = (function(){
 	var score = 0;
 	var bouncedLeft = false;
 	var bouncedRight = false;
+	var lastStuck = null;
 
 	var initGrid = function() {
 		grid = [];
@@ -233,6 +234,8 @@ var BubbleGame = (function(){
 			var floatpop = removeFloatingBubbles();
 			score += 100 * floatpop.length;
 			waspopped = toPop.concat(floatpop);
+		} else {
+			lastStuck = [closest[0].hx, closest[0].hy];
 		}
 		bouncedRight = false;
 		bouncedLeft = false;
@@ -255,6 +258,10 @@ var BubbleGame = (function(){
 		return score;
 	};
 
+	var getLastStuck = function() {
+		return lastStuck;
+	}
+
 	return {
 		"initGrid": initGrid,
 		"getGrid": getGrid,
@@ -265,6 +272,7 @@ var BubbleGame = (function(){
 		"shootBubble":shootBubble,
 		"getLoadedBubble": getLoadedBubble,
 		"getNextBubble": getNextBubble,
-		"getScore": getScore
+		"getScore": getScore,
+		"getLastStuck": getLastStuck
 	};
 })();

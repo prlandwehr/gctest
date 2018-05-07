@@ -10,8 +10,6 @@ import ui.resource.Image as Image;
 import ui.TextView;
 import src.MoleHill as MoleHill;
 
-/* Some game constants.
- */
 //Visual resource constants
 var img_bbl_r = new Image({url: "resources/images/ball_red.png"});
 var img_bbl_b = new Image({url: "resources/images/ball_blue.png"});
@@ -51,6 +49,7 @@ var circleradius = hexwidth / 2;
 var activeTick = 0;
 var debug_gridwidth = (g_gridsizex*hexwidth)+(0.5*hexwidth);
 var debug_gridheight = (0.75*hexheight*g_gridsizey)+(0.25*hexheight);
+//Visual non-constants
 var LoadedBubble = null;
 var NextBubble = null;
 var ActiveGrid = [
@@ -63,7 +62,7 @@ var ActiveGrid = [
 	[null,null,null,null,null,null,null,null,null,null,null,null],
 	[null,null,null,null,null,null,null,null,null,null,null,null]
 ];
-//Other constants
+//Mole constants
 var score = 0;
 var high_score = 19;
 var hit_value = 1;
@@ -74,8 +73,6 @@ var countdown_secs = game_length / 1000;
 var lang = 'en';
 
 /* The GameScreen view is a child of the main application.
- * By adding the scoreboard and the molehills as it's children,
- * everything is visible in the scene graph.
  */
 exports = Class(ui.View, function (supr) {
 	this.init = function (opts) {
@@ -205,6 +202,19 @@ exports = Class(ui.View, function (supr) {
 			//remove any matches
 			if(tickResults[1].length > 0) {
 				gamescr.removeSubview(LoadedBubble);
+			} else {
+				//stick shot
+				var last = BubbleGame.getLastStuck();
+				if(last[1] % 2 == 0) {
+					var cx = hexwidth*last[0];
+					var cy = 0.75*hexheight*last[1];
+				} else {
+					var cx = hexwidth*(last[0]+0.5);
+					var cy = 0.75*hexheight*(last[1]);
+				}
+				LoadedBubble.updateOpts({x:cx, y:cy});
+				ActiveGrid[last[0]][last[1]] = LoadedBubble;
+
 			}
 			for(var i = 0; i < tickResults[1].length; i++) {
 				//parent remove
@@ -243,9 +253,6 @@ exports = Class(ui.View, function (supr) {
 		}
 	};
 
-	/*
-	 * Layout the scoreboard and molehills.
-	 */
 	this.build = function () {
 		/* The start event is emitted from the start button via the main application.
 		 */
@@ -358,6 +365,7 @@ var BubbleGame = (function(){
 	var score = 0;
 	var bouncedLeft = false;
 	var bouncedRight = false;
+	var lastStuck = null;
 
 	var initGrid = function() {
 		grid = [];
@@ -565,6 +573,8 @@ var BubbleGame = (function(){
 			var floatpop = removeFloatingBubbles();
 			score += 100 * floatpop.length;
 			waspopped = toPop.concat(floatpop);
+		} else {
+			lastStuck = [closest[0].hx, closest[0].hy];
 		}
 		bouncedRight = false;
 		bouncedLeft = false;
@@ -587,6 +597,10 @@ var BubbleGame = (function(){
 		return score;
 	};
 
+	var getLastStuck = function() {
+		return lastStuck;
+	}
+
 	return {
 		"initGrid": initGrid,
 		"getGrid": getGrid,
@@ -597,7 +611,8 @@ var BubbleGame = (function(){
 		"shootBubble":shootBubble,
 		"getLoadedBubble": getLoadedBubble,
 		"getNextBubble": getNextBubble,
-		"getScore": getScore
+		"getScore": getScore,
+		"getLastStuck": getLastStuck
 	};
 })();
 
