@@ -297,25 +297,11 @@ function play_game () {
 	//
 }
 
-/* Pick a random, non-active, mole from our molehills.
- */
-function tick () {
-	//
-}
-
-/* Updates the countdown timer, pad out leading zeros.
- */
-function update_countdown () {
-	//
-}
-
 /* Check for high-score and play the ending animation.
  * Add a click-handler to the screen to return to the title
  * screen so we may play again.
  */
 function end_game_flow () {
-	//
-
 	//slight delay before allowing a tap reset
 	setTimeout(emit_endgame_event.bind(this), 2000);
 }
