@@ -11,12 +11,23 @@ exports.getSound = function () {
 			files: {
 				levelmusic: {
 					path: 'music',
-					volume: 0.5,
+					volume: 0.2,
 					background: true,
 					loop: true
 				},
 				whack: {
 					path: 'effect',
+					volume: 1.0,
+					background: false
+				},
+				pop: {
+					path: 'effect',
+					volume: 1.0,
+					background: false
+				},
+				shot: {
+					path: 'effect',
+					volume: 1.0,
 					background: false
 				}
 			}

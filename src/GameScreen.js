@@ -7,6 +7,7 @@ import ui.View;
 import ui.ImageView;
 import ui.resource.Image as Image;
 import ui.TextView;
+import src.soundcontroller as soundcontroller;
 
 //Visual resource constants
 var img_bbl_r = new Image({url: "resources/images/ball_red.png"});
@@ -14,6 +15,7 @@ var img_bbl_b = new Image({url: "resources/images/ball_blue.png"});
 var img_bbl_g = new Image({url: "resources/images/ball_green.png"});
 var img_bbl_p = new Image({url: "resources/images/ball_purple.png"});
 var img_bbl_y = new Image({url: "resources/images/ball_yellow.png"});
+var arrow_img = new Image({url: "resources/images/arrow1.png"});
 var bubbleImages = {
 	"r": img_bbl_r,
 	"b": img_bbl_b,
@@ -52,6 +54,7 @@ var gameCompleteTextView = null;
 var activeTick = 0; //interval ID for bubble movement
 var LoadedBubble = null; //game scene loaded bubble
 var NextBubble = null; //game scene next bubble
+var PointerArrow = null;
 var ActiveGrid = [ //keeps track of bubbles in the game scene
 	[null,null,null,null,null,null,null,null,null,null,null,null],
 	[null,null,null,null,null,null,null,null,null,null,null,null],
@@ -62,6 +65,7 @@ var ActiveGrid = [ //keeps track of bubbles in the game scene
 	[null,null,null,null,null,null,null,null,null,null,null,null],
 	[null,null,null,null,null,null,null,null,null,null,null,null]
 ];
+var soundCtrl = null;
 
 /* The GameScreen view is a child of the main application.
  */
@@ -75,6 +79,7 @@ exports = Class(ui.View, function (supr) {
 		});
 
 		supr(this, 'init', [opts]);
+		soundCtrl = soundcontroller.getSound();
 
 		this.build();
 	};
@@ -84,6 +89,19 @@ exports = Class(ui.View, function (supr) {
 		this.setBubbles();
 
 		//input section
+		this.on('InputMove', bind(this, function (event) {
+			if(!gameComplete) {
+				var x = event.srcPoint.x;
+				var y = event.srcPoint.y;
+				//calculate arrow angle
+				var x1 = LoadedBubble.getPosition().x+(LoadedBubble.getPosition().width/2);
+				var y1 = LoadedBubble.getPosition().y+(LoadedBubble.getPosition().height/2);
+				var angleRadians = Math.atan2(y - y1, x - x1);
+				var angleDeg = Math.atan2(y - y1, x - x1) * 180 / Math.PI;
+
+				PointerArrow.style.r = angleRadians + (Math.PI/2);
+			}
+		}));
 		this.on('InputSelect', bind(this, function (event) {
 			var x = event.srcPoint.x;
 			var y = event.srcPoint.y;
@@ -104,6 +122,7 @@ exports = Class(ui.View, function (supr) {
 			var angleDeg = Math.atan2(y - y1, x - x1) * 180 / Math.PI;
 
 			BubbleGame.shootBubble(angleRadians);
+			soundCtrl.play("shot");
 			activeTick = setInterval(this.bubbleTick,16);
 		}));
 	};
@@ -174,6 +193,17 @@ exports = Class(ui.View, function (supr) {
 			width: hexwidth,
 			height: hexheight
 		});
+
+		PointerArrow = new ui.ImageView({
+			superview: this,
+			image: arrow_img,
+			x: 320/2-12,
+			y: debug_gridheight-60,
+			width: 15,
+			height: 60,
+			anchorX: 7.5,
+			anchorY: 60
+		});
 	};
 
 	this.bubbleTick = function(){
@@ -193,6 +223,7 @@ exports = Class(ui.View, function (supr) {
 			var parents = LoadedBubble.getParents();
 			var gamescr = parents[parents.length - 1];
 			if(tickResults[1].length > 0) { //remove shot bubble
+				soundCtrl.play("pop");
 				gamescr.removeSubview(LoadedBubble);
 			} else {
 				//stick shot
@@ -269,6 +300,19 @@ exports = Class(ui.View, function (supr) {
 				y: debug_gridheight-hexheight,
 				width: hexwidth,
 				height: hexheight
+			});
+			var lastangle = PointerArrow.style.r;
+			gamescr.removeSubview(PointerArrow);
+			PointerArrow = new ui.ImageView({
+				superview: gamescr,
+				image: arrow_img,
+				x: 320/2-12,
+				y: debug_gridheight-60,
+				width: 15,
+				height: 60,
+				anchorX: 7.5,
+				anchorY: 60,
+				r: lastangle
 			});
 		} else {
 			//no collision occured
