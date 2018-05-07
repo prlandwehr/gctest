@@ -194,7 +194,7 @@ var BubbleGame = (function(){
 			collision = [true, stick()];
 			//clearInterval(activeTick);
 			//activeTick = 0;
-			return popped;
+			return collision;
 		}
 		//bubble collision
 		for(var y = 0; y < g_gridsizey; y++) {

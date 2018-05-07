@@ -42,7 +42,8 @@ var level1test = [
 	["g","g","","","","","","","","","",""],
 	["g","g","","","","","","","","","",""],
 	["y","y","","","","","","","","","",""],
-	["y","y","","","","","","","","","",""]];
+	["y","y","","","","","","","","","",""]
+];
 //BubbleVisualDebug.js constants
 var hexwidth = Math.sqrt(3)*15;
 var hexheight = 30;
@@ -52,6 +53,16 @@ var debug_gridwidth = (g_gridsizex*hexwidth)+(0.5*hexwidth);
 var debug_gridheight = (0.75*hexheight*g_gridsizey)+(0.25*hexheight);
 var LoadedBubble = null;
 var NextBubble = null;
+var ActiveGrid = [
+	[null,null,null,null,null,null,null,null,null,null,null,null],
+	[null,null,null,null,null,null,null,null,null,null,null,null],
+	[null,null,null,null,null,null,null,null,null,null,null,null],
+	[null,null,null,null,null,null,null,null,null,null,null,null],
+	[null,null,null,null,null,null,null,null,null,null,null,null],
+	[null,null,null,null,null,null,null,null,null,null,null,null],
+	[null,null,null,null,null,null,null,null,null,null,null,null],
+	[null,null,null,null,null,null,null,null,null,null,null,null]
+];
 //Other constants
 var score = 0;
 var high_score = 19;
@@ -61,8 +72,6 @@ var game_on = false;
 var game_length = 20000; //20 secs
 var countdown_secs = game_length / 1000;
 var lang = 'en';
-
-var loadedbubblestart = [0,0];
 
 /* The GameScreen view is a child of the main application.
  * By adding the scoreboard and the molehills as it's children,
@@ -79,17 +88,10 @@ exports = Class(ui.View, function (supr) {
 
 		supr(this, 'init', [opts]);
 
-		activeTick = 0;
-
-		//this.LoadedBubble = null;
-		//this.NextBubble = null;
-
 		this.build();
 	};
 
 	this.initBubbleGame = function() {
-		//
-
 		BubbleGame.initGrid();
 		var grid = BubbleGame.getGrid();
 		
@@ -101,9 +103,9 @@ exports = Class(ui.View, function (supr) {
 				var cy = 0.75*hexheight*y;
 				var cimg = bubbleImages[grid[x][y].color];
 				if(grid[x][y].isNull) {
-					//style += "display:none";
+					ActiveGrid[x][y] = null;
 				} else {
-					new ui.ImageView({
+					var newimage = new ui.ImageView({
 						superview: this,
 						image: cimg,
 						x: cx,
@@ -111,15 +113,16 @@ exports = Class(ui.View, function (supr) {
 						width: hexwidth,
 						height: hexheight
 					});
+					ActiveGrid[x][y] = newimage;
 				}
 				// odd
 				cx = hexwidth*(x+0.5);
 				cy = 0.75*hexheight*(y+1);
 				cimg = bubbleImages[grid[x][y+1].color];
 				if(grid[x][y+1].isNull) {
-					//style += "display:none";
+					ActiveGrid[x][y+1] = null;
 				} else {
-					new ui.ImageView({
+					var newimage = new ui.ImageView({
 						superview: this,
 						image: cimg,
 						x: cx,
@@ -127,6 +130,7 @@ exports = Class(ui.View, function (supr) {
 						width: hexwidth,
 						height: hexheight
 					});
+					ActiveGrid[x][y+1] = newimage;
 				}
 			}
 		}
@@ -138,7 +142,6 @@ exports = Class(ui.View, function (supr) {
 		var gridw = g_gridsizex * g_hexwidth + (g_hexwidth/2);
 		var gridh = ((g_gridsizey/2)*1.5*g_hexheight)+(0.25*g_hexheight);
 		var xy = [lx/gridw*debug_gridwidth, ly/gridh*debug_gridheight];
-		loadedbubblestart = [lx,ly];
 		LoadedBubble = new ui.ImageView({
 			superview: this,
 			image: bubbleImages[loadedb.color],
@@ -187,21 +190,33 @@ exports = Class(ui.View, function (supr) {
 		var loadedb = BubbleGame.getLoadedBubble();
 		var lx = loadedb.activex;
 		var ly = loadedb.activey;
-		if(lx == loadedbubblestart[0] && ly == loadedbubblestart[1]) {
-			//
-		} else {
-			var xy = [(lx/g_gridwidth*debug_gridwidth), (ly/g_gridheight*debug_gridheight)];
-			LoadedBubble.updateOpts({x:xy[0], y:xy[1]});
-		}
-		//
-		if(BubbleGame.getTickID() == 0) {
+
+		var xy = [(lx/g_gridwidth*debug_gridwidth), (ly/g_gridheight*debug_gridheight)];
+		LoadedBubble.updateOpts({x:xy[0], y:xy[1]});
+
+		var tickResults = BubbleGame.tick();
+
+		if(tickResults[0]) {
 			clearInterval(activeTick);
 			activeTick = 0;
 			//
 			var parents = LoadedBubble.getParents();
 			var gamescr = parents[parents.length - 1];
+			//remove any matches
+			if(tickResults[1].length > 0) {
+				gamescr.removeSubview(LoadedBubble);
+			}
+			for(var i = 0; i < tickResults[1].length; i++) {
+				//parent remove
+				var currentTickResult = tickResults[1][i];
+				var currentActiveBubble = ActiveGrid[currentTickResult.hx][currentTickResult.hy];
+				if(currentActiveBubble != null) {
+					gamescr.removeSubview(ActiveGrid[ tickResults[1][i].hx ][ tickResults[1][i].hy ]);
+					ActiveGrid[ tickResults[1][i].hx ][ tickResults[1][i].hy ] = null;
+				}
+			}
 			//create loaded and next bubble
-			var loadedb = BubbleGame.getLoadedBubble();
+			loadedb = BubbleGame.getLoadedBubble();
 			var lx = loadedb.activex;
 			var ly = loadedb.activey;
 			var gridw = g_gridsizex * g_hexwidth + (g_hexwidth/2);
@@ -223,6 +238,8 @@ exports = Class(ui.View, function (supr) {
 				width: hexwidth,
 				height: hexheight
 			});
+		} else {
+			//no collision
 		}
 	};
 
@@ -453,7 +470,7 @@ var BubbleGame = (function(){
 	var nextBubble = null;
 	var playerAngle = 0;
 	var score = 0;
-	var activeTick = 0;
+	//var activeTick = 0;
 	var bouncedLeft = false;
 	var bouncedRight = false;
 
@@ -523,7 +540,7 @@ var BubbleGame = (function(){
 
 	//remove bubbles that are floating after a pop
 	var removeFloatingBubbles = function() {
-		var numPopped = 0;
+		var waspopped = [];
 		for(var y = 1; y < g_gridsizey; y++) {
 			var group = [];
 			//itterate over rows starting from the top
@@ -550,14 +567,14 @@ var BubbleGame = (function(){
 					if(nolinks) {
 						for(var i = 0; i < group.length; i++) {
 							group[i].isNull = true;
-							numPopped++;
+							waspopped.push(group[i]);
 						}
 					}
 					group = [];
 				}
 			}
 		}
-		return numPopped;
+		return waspopped;
 	};
 
 	//Create the next bubble to be shot from an active color
@@ -590,19 +607,20 @@ var BubbleGame = (function(){
 	};
 	//
 	var shootBubble = function(angle) {
-		if(activeTick != 0) {
+		/*if(activeTick != 0) {
 			return;
-		}
+		}*/
 
 		loadedBubble.activex = (g_gridwidth / 2) - g_hexradius;
 		loadedBubble.activey = grid[g_gridsizex-1][g_gridsizey-1].activey;
 
 		loadedBubble.vx = g_shotspeed * Math.cos(angle);
 		loadedBubble.vy = -Math.abs(g_shotspeed * Math.sin(angle));
-		activeTick = setInterval(tick,16);
+		//activeTick = setInterval(tick,16);
 	};
 	//
 	var tick = function() {
+		var collision = [false];
 		//move bubble
 		loadedBubble.activex += loadedBubble.vx;
 		loadedBubble.activey +=  loadedBubble.vy;
@@ -619,10 +637,10 @@ var BubbleGame = (function(){
 		}
 		//top wall collision
 		if(loadedBubble.activey - g_hexradius <= 0) {
-			stick();
-			clearInterval(activeTick);
-			activeTick = 0;
-			return;
+			collision = [true, stick()];
+			//clearInterval(activeTick);
+			//activeTick = 0;
+			return collision;
 		}
 		//bubble collision
 		for(var y = 0; y < g_gridsizey; y++) {
@@ -632,17 +650,19 @@ var BubbleGame = (function(){
 					var cBubbleCoord = grid[x][y].getXY();
 					var bubbledist = Math.sqrt( Math.pow(cBubbleCoord[0]-loadedBubble.activex,2) + Math.pow(cBubbleCoord[1]-loadedBubble.activey,2) );
 					if(bubbledist <= g_hexradius*2) {
-						stick();
-						clearInterval(activeTick);
-						activeTick = 0;
+						collision = [true, stick()];
+						//clearInterval(activeTick);
+						//activeTick = 0;
 						break;
 					}
 				}
 			}
 		}
+		return collision;
 	};
 	//
 	var stick = function() {
+		var waspopped = [];
 		var closest = [null,1000];//bubble, dist
 		for(var y = 0; y < g_gridsizey; y++) {
 			//itterate over rows starting from the top
@@ -666,7 +686,9 @@ var BubbleGame = (function(){
 				toPop[i].isNull = true;
 				score += 100;
 			}
-			score += 100 * removeFloatingBubbles();
+			var floatpop = removeFloatingBubbles();
+			score += 100 * floatpop.length;
+			waspopped = toPop.concat(floatpop);
 		}
 		bouncedRight = false;
 		bouncedLeft = false;
@@ -674,8 +696,7 @@ var BubbleGame = (function(){
 			//game over here
 		}
 		reloadActiveBubble();
-		//render bubbles here
-		//should happen automatically based on tick polling now
+		return waspopped;
 	};
 
 	var getLoadedBubble = function() {
@@ -690,10 +711,6 @@ var BubbleGame = (function(){
 		return score;
 	};
 
-	var getTickID = function() {
-		return activeTick;
-	}
-
 	return {
 		"initGrid": initGrid,
 		"getGrid": getGrid,
@@ -704,8 +721,7 @@ var BubbleGame = (function(){
 		"shootBubble":shootBubble,
 		"getLoadedBubble": getLoadedBubble,
 		"getNextBubble": getNextBubble,
-		"getScore": getScore,
-		"getTickID": getTickID
+		"getScore": getScore
 	};
 })();
 
