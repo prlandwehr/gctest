@@ -157,14 +157,14 @@ exports = Class(ui.View, function (supr) {
 		});
 
 		//input section
-		this.inputBox = new ui.View({
+		/*this.inputBox = new ui.View({
 			superview: this,
 			x: 0,
 			y: 0,
 			width: debug_gridwidth,
 			height: debug_gridheight
-		});
-		this.inputBox.on('InputSelect', bind(this, function (event) {
+		});*/
+		this.on('InputSelect', bind(this, function (event) {
 			var x = event.srcPoint.x;
 			var y = event.srcPoint.y;
 			//console.log("x:"+x+" y:"+y);
