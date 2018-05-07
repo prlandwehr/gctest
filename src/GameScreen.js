@@ -172,8 +172,8 @@ exports = Class(ui.View, function (supr) {
 				return;
 			}
 			//calculate shot angle
-			var x1 = LoadedBubble.getPosition().x;
-			var y1 = LoadedBubble.getPosition().y;
+			var x1 = LoadedBubble.getPosition().x+(LoadedBubble.getPosition().width/2);
+			var y1 = LoadedBubble.getPosition().y+(LoadedBubble.getPosition().height/2);
 			var angleRadians = Math.atan2(y - y1, x - x1);
 			var angleDeg = Math.atan2(y - y1, x - x1) * 180 / Math.PI;
 
