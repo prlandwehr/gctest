@@ -17,7 +17,7 @@ var Bubble = class {
 		this.width = Math.sqrt(3)*0.5;
 		this.height = 0.5*2;
 	}
-	//Return neighboring hexes in a corner to hcoordinant mapping
+	//Return neighboring hexs' coordinants as map
 	getNeighborCoords(gridx, gridy) {
 		//set bounds
 		if(typeof gridx === "undefined"){gridx = g_gridsizex;}
@@ -94,7 +94,7 @@ var Bubble = class {
 		}
 		return neighbors;
 	}
-	//Return upper left and upper right neighbors
+	//Return upper left and upper right neighbors coordinants as map
 	getUpperCoords(gridx, gridy) {
 		//set bounds
 		if(typeof gridx === "undefined"){gridx = g_gridsizex;}
@@ -124,7 +124,7 @@ var Bubble = class {
 		}
 		return neighbors;
 	}
-	//Return upper left and upper right neighbors
+	//Return upper left and upper right neighbors coordinants
 	getUpperCoordsArray(gridx, gridy) {
 		//set bounds
 		if(typeof gridx === "undefined"){gridx = g_gridsizex;}

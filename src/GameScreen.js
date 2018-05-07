@@ -22,7 +22,7 @@ var bubbleImages = {
 	"p": img_bbl_p,
 	"y": img_bbl_y,
 };
-//BubbleGame.js constants
+//BubbleGame Module constants
 var g_gridsizex = 8;
 var g_gridsizey = 12; //last row is kill row
 var g_hexwidth = Math.sqrt(3)*0.5;
@@ -41,14 +41,14 @@ var level1test = [
 	["y","y","","","","","","","","","",""],
 	["y","y","","","","","","","","","",""]
 ];
-//BubbleVisualDebug.js constants
+//BubbleGame Screen constants
 var hexwidth = Math.sqrt(3)*21;
 var hexheight = 21*2;
 var circleradius = hexwidth / 2;
-var activeTick = 0;
 var debug_gridwidth = (g_gridsizex*hexwidth)+(0.5*hexwidth);
 var debug_gridheight = (0.75*hexheight*g_gridsizey)+(0.25*hexheight);
-//Visual non-constants
+//non-constants
+var activeTick = 0;
 var LoadedBubble = null;
 var NextBubble = null;
 var ActiveGrid = [
@@ -62,14 +62,7 @@ var ActiveGrid = [
 	[null,null,null,null,null,null,null,null,null,null,null,null]
 ];
 //Mole constants
-var score = 0;
-var high_score = 19;
-var hit_value = 1;
-var mole_interval = 600;
 var game_on = false;
-var game_length = 20000; //20 secs
-var countdown_secs = game_length / 1000;
-var lang = 'en';
 
 /* The GameScreen view is a child of the main application.
  */
@@ -633,7 +626,7 @@ var Bubble = class {
 		this.width = Math.sqrt(3)*0.5;
 		this.height = 0.5*2;
 	}
-	//Return neighboring hexes in a corner to hcoordinant mapping
+	//Return neighboring hexs' coordinants as map
 	getNeighborCoords(gridx, gridy) {
 		//set bounds
 		if(typeof gridx === "undefined"){gridx = g_gridsizex;}
@@ -710,7 +703,7 @@ var Bubble = class {
 		}
 		return neighbors;
 	}
-	//Return upper left and upper right neighbors
+	//Return upper left and upper right neighbors coordinants as map
 	getUpperCoords(gridx, gridy) {
 		//set bounds
 		if(typeof gridx === "undefined"){gridx = g_gridsizex;}
@@ -740,7 +733,7 @@ var Bubble = class {
 		}
 		return neighbors;
 	}
-	//Return upper left and upper right neighbors
+	//Return upper left and upper right neighbors coordinants
 	getUpperCoordsArray(gridx, gridy) {
 		//set bounds
 		if(typeof gridx === "undefined"){gridx = g_gridsizex;}
