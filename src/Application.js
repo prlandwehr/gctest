@@ -22,6 +22,7 @@ exports = Class(GC.Application, function () {
 		var titlescreen = new TitleScreen(),
 				gamescreen = new GameScreen();
 
+		var firstplay = true;
 		this.view.style.backgroundColor = '#000000';
 
 		// Create a stackview of size 320x480, then scale it to fit horizontally

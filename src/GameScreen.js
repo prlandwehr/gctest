@@ -63,8 +63,6 @@ var ActiveGrid = [
 	[null,null,null,null,null,null,null,null,null,null,null,null],
 	[null,null,null,null,null,null,null,null,null,null,null,null]
 ];
-//Mole constants
-var game_on = false;
 
 /* The GameScreen view is a child of the main application.
  */
@@ -84,6 +82,34 @@ exports = Class(ui.View, function (supr) {
 
 	this.initBubbleGame = function() {
 		BubbleGame.initGrid();
+		this.setBubbles();
+
+		//input section
+		this.on('InputSelect', bind(this, function (event) {
+			var x = event.srcPoint.x;
+			var y = event.srcPoint.y;
+			//console.log("x:"+x+" y:"+y);
+
+			if(activeTick != 0) {
+				return;
+			}
+			if(gameComplete) {
+				this.emit('gamescreen:end');
+				reset_game.call(this);
+				return;
+			}
+			//calculate shot angle
+			var x1 = LoadedBubble.getPosition().x+(LoadedBubble.getPosition().width/2);
+			var y1 = LoadedBubble.getPosition().y+(LoadedBubble.getPosition().height/2);
+			var angleRadians = Math.atan2(y - y1, x - x1);
+			var angleDeg = Math.atan2(y - y1, x - x1) * 180 / Math.PI;
+
+			BubbleGame.shootBubble(angleRadians);
+			activeTick = setInterval(this.bubbleTick,16);
+		}));
+	};
+
+	this.setBubbles = function() {
 		var grid = BubbleGame.getGrid();
 		
 		//create level's bubbles
@@ -149,37 +175,6 @@ exports = Class(ui.View, function (supr) {
 			width: hexwidth,
 			height: hexheight
 		});
-
-		//input section
-		/*this.inputBox = new ui.View({
-			superview: this,
-			x: 0,
-			y: 0,
-			width: debug_gridwidth,
-			height: debug_gridheight
-		});*/
-		this.on('InputSelect', bind(this, function (event) {
-			var x = event.srcPoint.x;
-			var y = event.srcPoint.y;
-			//console.log("x:"+x+" y:"+y);
-
-			if(activeTick != 0) {
-				return;
-			}
-			if(gameComplete) {
-				this.emit('gamescreen:end');
-				reset_game.call(this);
-				return;
-			}
-			//calculate shot angle
-			var x1 = LoadedBubble.getPosition().x+(LoadedBubble.getPosition().width/2);
-			var y1 = LoadedBubble.getPosition().y+(LoadedBubble.getPosition().height/2);
-			var angleRadians = Math.atan2(y - y1, x - x1);
-			var angleDeg = Math.atan2(y - y1, x - x1) * 180 / Math.PI;
-
-			BubbleGame.shootBubble(angleRadians);
-			activeTick = setInterval(this.bubbleTick,16);
-		}));
 	};
 
 	this.bubbleTick = function(){
@@ -324,30 +319,23 @@ exports = Class(ui.View, function (supr) {
  * Game play
  */
 
-/* Manages the intro animation sequence before starting game.
+/* 
  */
 function start_game_flow () {
 	var that = this;
-			game_on = true;
-			play_game.call(that);
+	play_game.call(that);
 }
 
-/* With everything in place, the actual game play is quite simple.
- * Summon a non-active mole every n seconds. If it's hit, an event
- * handler on the molehill updates the score. After a set timeout,
- * stop calling the moles and proceed to the end game.
+/* 
  */
 function play_game () {
 	//
 }
 
-/* Check for high-score and play the ending animation.
- * Add a click-handler to the screen to return to the title
- * screen so we may play again.
+/* 
  */
 function end_game_flow () {
-	//slight delay before allowing a tap reset
-	setTimeout(emit_endgame_event.bind(this), 2000);
+	//
 }
 
 /* Reset game counters and assets.
@@ -372,8 +360,9 @@ function reset_game () {
 		[null,null,null,null,null,null,null,null,null,null,null,null],
 		[null,null,null,null,null,null,null,null,null,null,null,null]
 	];
+	//
 	BubbleGame.resetGame();
-	this.build();
+	this.setBubbles();
 }
 
 
