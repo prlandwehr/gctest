@@ -48,6 +48,8 @@ var circleradius = hexwidth / 2;
 var debug_gridwidth = (g_gridsizex*hexwidth)+(0.5*hexwidth);
 var debug_gridheight = (0.75*hexheight*g_gridsizey)+(0.25*hexheight);
 //non-constants
+var gameComplete = false;
+var gameCompleteTextView = null;
 var activeTick = 0;
 var LoadedBubble = null;
 var NextBubble = null;
@@ -164,6 +166,11 @@ exports = Class(ui.View, function (supr) {
 			if(activeTick != 0) {
 				return;
 			}
+			if(gameComplete) {
+				this.emit('gamescreen:end');
+				reset_game.call(this);
+				return;
+			}
 			//calculate shot angle
 			var x1 = LoadedBubble.getPosition().x+(LoadedBubble.getPosition().width/2);
 			var y1 = LoadedBubble.getPosition().y+(LoadedBubble.getPosition().height/2);
@@ -217,6 +224,43 @@ exports = Class(ui.View, function (supr) {
 					ActiveGrid[ tickResults[1][i].hx ][ tickResults[1][i].hy ] = null;
 				}
 			}
+			//check for game end
+			if(BubbleGame.getGameOver()) {
+				gameCompleteTextView = new ui.TextView({
+					superview: gamescr,
+					x: 0,
+					y: 15,
+					width: 320,
+					height: 50,
+					autoSize: false,
+					size: 38,
+					verticalAlign: 'middle',
+					horizontalAlign: 'center',
+					wrap: false,
+					color: '#FFFFFF'
+				});
+				gameCompleteTextView.setText("GAME OVER");
+				gameComplete = true;
+				return;
+			} else if(BubbleGame.getGameWon()) {
+				gameCompleteTextView = new ui.TextView({
+					superview: gamescr,
+					x: 0,
+					y: 15,
+					width: 320,
+					height: 50,
+					autoSize: false,
+					size: 38,
+					verticalAlign: 'middle',
+					horizontalAlign: 'center',
+					wrap: false,
+					color: '#FFFFFF'
+				});
+				gameCompleteTextView.setText("VICTORY");
+				gameComplete = true;
+				return;
+			}
+
 			//create loaded and next bubble
 			loadedb = BubbleGame.getLoadedBubble();
 			var lx = loadedb.activex;
@@ -306,19 +350,30 @@ function end_game_flow () {
 	setTimeout(emit_endgame_event.bind(this), 2000);
 }
 
-/* Tell the main app to switch back to the title screen.
- */
-function emit_endgame_event () {
-	this.once('InputSelect', function () {
-		this.emit('gamescreen:end');
-		reset_game.call(this);
-	});
-}
-
 /* Reset game counters and assets.
  */
 function reset_game () {
+	var parents = gameCompleteTextView.getParents();
+	var gamescr = parents[parents.length - 1];
+	gamescr.removeAllSubviews();
 	//
+	gameComplete = false;
+	gameCompleteTextView = null;
+	activeTick = 0;
+	LoadedBubble = null;
+	NextBubble = null;
+	ActiveGrid = [
+		[null,null,null,null,null,null,null,null,null,null,null,null],
+		[null,null,null,null,null,null,null,null,null,null,null,null],
+		[null,null,null,null,null,null,null,null,null,null,null,null],
+		[null,null,null,null,null,null,null,null,null,null,null,null],
+		[null,null,null,null,null,null,null,null,null,null,null,null],
+		[null,null,null,null,null,null,null,null,null,null,null,null],
+		[null,null,null,null,null,null,null,null,null,null,null,null],
+		[null,null,null,null,null,null,null,null,null,null,null,null]
+	];
+	BubbleGame.resetGame();
+	this.build();
 }
 
 
@@ -333,11 +388,12 @@ var BubbleGame = (function(){
 	var validColors = ["b","g","p","r","y"]; //blue green purple red yellow
 	var loadedBubble = null; //bubble about to be shot or in flight
 	var nextBubble = null;
-	var playerAngle = 0;
 	var score = 0;
 	var bouncedLeft = false;
 	var bouncedRight = false;
 	var lastStuck = null;
+	var gameover = false;
+	var gamewon = false;
 
 	var initGrid = function() {
 		grid = [];
@@ -355,6 +411,18 @@ var BubbleGame = (function(){
 		setNextBubble();
 		reloadActiveBubble();
 		setNextBubble();
+	};
+
+	var resetGame = function() {
+		loadedBubble = null;
+		nextBubble = null;
+		score = 0;
+		bouncedLeft = false;
+		bouncedRight = false;
+		lastStuck = null;
+		gameover = false;
+		gamewon = false;
+		initGrid();
 	};
 
 	var loadLevelArray = function(arr) {
@@ -550,9 +618,17 @@ var BubbleGame = (function(){
 		}
 		bouncedRight = false;
 		bouncedLeft = false;
+		//endgame check
 		if(loadedBubble.hy == g_gridsizey - 1) {
-			//game over here
+			gameover = true;
 		}
+		gamewon = true;
+		for(var i = 0; i < grid.length; i++) {
+			if(!grid[i][0].isNull) {
+				gamewon = false;
+			}
+		}
+		//
 		reloadActiveBubble();
 		return waspopped;
 	};
@@ -571,7 +647,15 @@ var BubbleGame = (function(){
 
 	var getLastStuck = function() {
 		return lastStuck;
-	}
+	};
+
+	var getGameOver = function() {
+		return gameover;
+	};
+
+	var getGameWon = function() {
+		return gamewon;
+	};
 
 	return {
 		"initGrid": initGrid,
@@ -584,7 +668,10 @@ var BubbleGame = (function(){
 		"getLoadedBubble": getLoadedBubble,
 		"getNextBubble": getNextBubble,
 		"getScore": getScore,
-		"getLastStuck": getLastStuck
+		"getLastStuck": getLastStuck,
+		"getGameOver":getGameOver,
+		"getGameWon":getGameWon,
+		"resetGame":resetGame
 	};
 })();
 

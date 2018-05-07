@@ -22,11 +22,12 @@ var BubbleGame = (function(){
 	var validColors = ["b","g","p","r","y"]; //blue green purple red yellow
 	var loadedBubble = null; //bubble about to be shot or in flight
 	var nextBubble = null;
-	var playerAngle = 0;
 	var score = 0;
 	var bouncedLeft = false;
 	var bouncedRight = false;
 	var lastStuck = null;
+	var gameover = false;
+	var gamewon = false;
 
 	var initGrid = function() {
 		grid = [];
@@ -44,6 +45,18 @@ var BubbleGame = (function(){
 		setNextBubble();
 		reloadActiveBubble();
 		setNextBubble();
+	};
+
+	var resetGame = function() {
+		loadedBubble = null;
+		nextBubble = null;
+		score = 0;
+		bouncedLeft = false;
+		bouncedRight = false;
+		lastStuck = null;
+		gameover = false;
+		gamewon = false;
+		initGrid();
 	};
 
 	var loadLevelArray = function(arr) {
@@ -239,9 +252,17 @@ var BubbleGame = (function(){
 		}
 		bouncedRight = false;
 		bouncedLeft = false;
+		//endgame check
 		if(loadedBubble.hy == g_gridsizey - 1) {
-			//game over here
+			gameover = true;
 		}
+		gamewon = true;
+		for(var i = 0; i < grid.length; i++) {
+			if(!grid[i][0].isNull) {
+				gamewon = false;
+			}
+		}
+		//
 		reloadActiveBubble();
 		return waspopped;
 	};
@@ -260,7 +281,15 @@ var BubbleGame = (function(){
 
 	var getLastStuck = function() {
 		return lastStuck;
-	}
+	};
+
+	var getGameOver = function() {
+		return gameover;
+	};
+
+	var getGameWon = function() {
+		return gamewon;
+	};
 
 	return {
 		"initGrid": initGrid,
@@ -273,6 +302,9 @@ var BubbleGame = (function(){
 		"getLoadedBubble": getLoadedBubble,
 		"getNextBubble": getNextBubble,
 		"getScore": getScore,
-		"getLastStuck": getLastStuck
+		"getLastStuck": getLastStuck,
+		"getGameOver":getGameOver,
+		"getGameWon":getGameWon,
+		"resetGame":resetGame
 	};
 })();
