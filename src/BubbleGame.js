@@ -24,7 +24,6 @@ var BubbleGame = (function(){
 	var nextBubble = null;
 	var playerAngle = 0;
 	var score = 0;
-	//var activeTick = 0;
 	var bouncedLeft = false;
 	var bouncedRight = false;
 
@@ -161,16 +160,11 @@ var BubbleGame = (function(){
 	};
 	//
 	var shootBubble = function(angle) {
-		/*if(activeTick != 0) {
-			return;
-		}*/
-
 		loadedBubble.activex = (g_gridwidth / 2) - g_hexradius;
 		loadedBubble.activey = grid[g_gridsizex-1][g_gridsizey-1].activey;
 
 		loadedBubble.vx = g_shotspeed * Math.cos(angle);
 		loadedBubble.vy = -Math.abs(g_shotspeed * Math.sin(angle));
-		//activeTick = setInterval(tick,16);
 	};
 	//
 	var tick = function() {
@@ -192,8 +186,6 @@ var BubbleGame = (function(){
 		//top wall collision
 		if(loadedBubble.activey - g_hexradius <= 0) {
 			collision = [true, stick()];
-			//clearInterval(activeTick);
-			//activeTick = 0;
 			return collision;
 		}
 		//bubble collision
@@ -205,8 +197,6 @@ var BubbleGame = (function(){
 					var bubbledist = Math.sqrt( Math.pow(cBubbleCoord[0]-loadedBubble.activex,2) + Math.pow(cBubbleCoord[1]-loadedBubble.activey,2) );
 					if(bubbledist <= g_hexradius*2) {
 						collision = [true, stick()];
-						//clearInterval(activeTick);
-						//activeTick = 0;
 						break;
 					}
 				}
