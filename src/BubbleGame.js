@@ -24,7 +24,7 @@ var BubbleGame = (function(){
 	var nextBubble = null;
 	var playerAngle = 0;
 	var score = 0;
-	var activeTick = 0;
+	//var activeTick = 0;
 	var bouncedLeft = false;
 	var bouncedRight = false;
 
@@ -94,7 +94,7 @@ var BubbleGame = (function(){
 
 	//remove bubbles that are floating after a pop
 	var removeFloatingBubbles = function() {
-		var numPopped = 0;
+		var waspopped = [];
 		for(var y = 1; y < g_gridsizey; y++) {
 			var group = [];
 			//itterate over rows starting from the top
@@ -121,14 +121,14 @@ var BubbleGame = (function(){
 					if(nolinks) {
 						for(var i = 0; i < group.length; i++) {
 							group[i].isNull = true;
-							numPopped++;
+							waspopped.push(group[i]);
 						}
 					}
 					group = [];
 				}
 			}
 		}
-		return numPopped;
+		return waspopped;
 	};
 
 	//Create the next bubble to be shot from an active color
@@ -161,19 +161,20 @@ var BubbleGame = (function(){
 	};
 	//
 	var shootBubble = function(angle) {
-		if(activeTick != 0) {
+		/*if(activeTick != 0) {
 			return;
-		}
+		}*/
 
 		loadedBubble.activex = (g_gridwidth / 2) - g_hexradius;
 		loadedBubble.activey = grid[g_gridsizex-1][g_gridsizey-1].activey;
 
 		loadedBubble.vx = g_shotspeed * Math.cos(angle);
 		loadedBubble.vy = -Math.abs(g_shotspeed * Math.sin(angle));
-		activeTick = setInterval(tick,16);
+		//activeTick = setInterval(tick,16);
 	};
 	//
 	var tick = function() {
+		var collision = [false];
 		//move bubble
 		loadedBubble.activex += loadedBubble.vx;
 		loadedBubble.activey +=  loadedBubble.vy;
@@ -190,10 +191,10 @@ var BubbleGame = (function(){
 		}
 		//top wall collision
 		if(loadedBubble.activey - g_hexradius <= 0) {
-			stick();
-			clearInterval(activeTick);
-			activeTick = 0;
-			return;
+			collision = [true, stick()];
+			//clearInterval(activeTick);
+			//activeTick = 0;
+			return popped;
 		}
 		//bubble collision
 		for(var y = 0; y < g_gridsizey; y++) {
@@ -203,17 +204,19 @@ var BubbleGame = (function(){
 					var cBubbleCoord = grid[x][y].getXY();
 					var bubbledist = Math.sqrt( Math.pow(cBubbleCoord[0]-loadedBubble.activex,2) + Math.pow(cBubbleCoord[1]-loadedBubble.activey,2) );
 					if(bubbledist <= g_hexradius*2) {
-						stick();
-						clearInterval(activeTick);
-						activeTick = 0;
+						collision = [true, stick()];
+						//clearInterval(activeTick);
+						//activeTick = 0;
 						break;
 					}
 				}
 			}
 		}
+		return collision;
 	};
 	//
 	var stick = function() {
+		var waspopped = [];
 		var closest = [null,1000];//bubble, dist
 		for(var y = 0; y < g_gridsizey; y++) {
 			//itterate over rows starting from the top
@@ -237,7 +240,9 @@ var BubbleGame = (function(){
 				toPop[i].isNull = true;
 				score += 100;
 			}
-			score += 100 * removeFloatingBubbles();
+			var floatpop = removeFloatingBubbles();
+			score += 100 * floatpop.length;
+			waspopped = toPop.concat(floatpop);
 		}
 		bouncedRight = false;
 		bouncedLeft = false;
@@ -245,7 +250,7 @@ var BubbleGame = (function(){
 			//game over here
 		}
 		reloadActiveBubble();
-		BubbleVisualDebug.renderBubbles();
+		return waspopped;
 	};
 
 	var getLoadedBubble = function() {

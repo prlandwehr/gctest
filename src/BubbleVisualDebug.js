@@ -105,7 +105,11 @@ var BubbleVisualDebug = (function(){
 	};
 
 	var tick = function() {
+		var tickResults = BubbleGame.tick();
 		updateShotRender();
+		if(tickResults[0]) {
+			renderBubbles();
+		}
 	};
 
 	var clicked = function(event) {
