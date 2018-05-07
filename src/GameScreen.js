@@ -1,6 +1,5 @@
 /*
- * The game screen is a singleton view that consists of
- * a scoreboard and a collection of molehills.
+ * The game screen is a singleton view
  */
 
 import animate;
@@ -50,10 +49,10 @@ var debug_gridheight = (0.75*hexheight*g_gridsizey)+(0.25*hexheight);
 //non-constants
 var gameComplete = false;
 var gameCompleteTextView = null;
-var activeTick = 0;
-var LoadedBubble = null;
-var NextBubble = null;
-var ActiveGrid = [
+var activeTick = 0; //interval ID for bubble movement
+var LoadedBubble = null; //game scene loaded bubble
+var NextBubble = null; //game scene next bubble
+var ActiveGrid = [ //keeps track of bubbles in the game scene
 	[null,null,null,null,null,null,null,null,null,null,null,null],
 	[null,null,null,null,null,null,null,null,null,null,null,null],
 	[null,null,null,null,null,null,null,null,null,null,null,null],
@@ -282,30 +281,6 @@ exports = Class(ui.View, function (supr) {
 		/* The start event is emitted from the start button via the main application.
 		 */
 		this.on('app:start', start_game_flow.bind(this));
-
-		/* The scoreboard displays the "ready, set, go" message,
-		 * the current score, and the end game message. We'll set
-		 * it as a hidden property on our class since we'll use it
-		 * throughout the game.
-		 */
-		this._scoreboard = new ui.TextView({
-			superview: this,
-			x: 0,
-			y: 15,
-			width: 320,
-			height: 50,
-			autoSize: false,
-			size: 38,
-			verticalAlign: 'middle',
-			horizontalAlign: 'center',
-			wrap: false,
-			color: '#FFFFFF'
-		});
-
-		var x_offset = 5;
-		var y_offset = 160;
-		var y_pad = 25;
-		var layout = [[1, 0, 1], [0, 1, 0], [1, 0, 1]];
 
 		this.style.width = 320;
 		this.style.height = 480;
