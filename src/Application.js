@@ -22,8 +22,7 @@ exports = Class(GC.Application, function () {
 		var titlescreen = new TitleScreen(),
 				gamescreen = new GameScreen();
 
-		this.view.style.backgroundColor = '#008a42';
-
+		this.view.style.backgroundColor = '#000000';
 
 		// Create a stackview of size 320x480, then scale it to fit horizontally
 		// Add a new StackView to the root of the scene graph
@@ -39,6 +38,8 @@ exports = Class(GC.Application, function () {
 			clip: true,
 			scale: wscale
 		});
+
+		rootView.style.backgroundColor = '#008a42';
 
 		rootView.push(titlescreen);
 
